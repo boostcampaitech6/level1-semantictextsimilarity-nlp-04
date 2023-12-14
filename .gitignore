@@ -6,12 +6,14 @@
 [Ss]cripts
 [Dd]ata
 [Oo]utput
+[Cc]onfig
 pyvenv.cfg
 .DS_Store
 *.txt
 *.json
 *.csv
 *.pt
+*.yaml
 !requirements.txt
 
 # Byte-compiled / optimized / DLL files

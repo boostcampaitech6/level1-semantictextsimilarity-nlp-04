@@ -1,5 +1,5 @@
 model:
-    model_name: 'klue/roberta-small'
+    model_name: 'jhgan/ko-sbert-sts'
     
 train:
     batch_size: 16
