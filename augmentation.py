@@ -35,12 +35,12 @@ def copy_data(data_path: str, df:pd.DataFrame):
     label_list = [5.0]*len(df)
     binary_label = [1.0]*len(df)
     for i in range(len(df)):
-      copied_sentence_1.append(copied(df.loc[i].sentence_1))
-      copied_sentence_2.append(copied(df.loc[i].sentence_2))
-      id_list_1.append(df.loc[i].id+'_copy')
-      id_list_2.append(df.loc[i].id+'_copy')
-      source_list_1.append(df.loc[i].source+'_copy')
-      source_list_2.append(df.loc[i].source+'_copy')
+        copied_sentence_1.append(copied(df.loc[i].sentence_1))
+        copied_sentence_2.append(copied(df.loc[i].sentence_2))
+        id_list_1.append(df.loc[i].id+'_copy')
+        id_list_2.append(df.loc[i].id+'_copy')
+        source_list_1.append(df.loc[i].source+'_copy')
+        source_list_2.append(df.loc[i].source+'_copy')
     df_copy_1 = pd.DataFrame({
         'id': id_list_1,
         'source': source_list_1,
