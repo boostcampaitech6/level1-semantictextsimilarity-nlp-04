@@ -109,7 +109,7 @@ def main(config: dict) -> None:
     saved_name = re.sub('/', '_', config['model']['model_name'])
 
     # 학습이 완료된 모델을 저장합니다.
-    torch.save(model, f'{output_path}{saved_name}_{max_epoch}.csv')
+    torch.save(model, f'{output_path}{saved_name}_{max_epoch}.pt')
 
     # 데이터 파일을 복사합니다.
     shutil.copyfile(train_path, f'{output_path}{saved_name}_{max_epoch}.csv')
@@ -151,9 +151,9 @@ if __name__ == '__main__':
             yaml.dump(configs, f)
     
 
-    print("-------------------" * 3)
+    print("---------------------------------------------------------------")
     pyprnt.prnt(configs)
-    print("-------------------" * 3)
+    print("---------------------------------------------------------------")
 
     set_seed(0)
     warning_block()
