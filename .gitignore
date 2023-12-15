@@ -16,6 +16,12 @@ pyvenv.cfg
 *.yaml
 !requirements.txt
 
+config
+config/
+config/config.yaml
+*.yaml
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
