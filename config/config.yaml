@@ -1,9 +1,9 @@
 model:
-    model_name: 'jhgan/ko-sbert-sts'
+    model_name: 'snunlp/KR-ELECTRA-discriminator'
     
 train:
     batch_size: 16
-    max_epochs: 1
+    max_epochs: 10
     shuffle: True
     learning_rate: 1e-5
 
