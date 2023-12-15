@@ -55,8 +55,15 @@ if __name__ == '__main__':
     # mdoel_name, learning_rate
     model = Model(args.model, float(config['train']['learning_rate']))
 
+    # early stopping
+    early_stopping_callbacks = pl.callbacks.EarlyStopping(
+        monitor='val_loss',
+        patience=3,
+        mode='min'
+    )
+
     # gpu가 없으면 accelerator="cpu"로 변경해주세요, gpu가 여러개면 'devices=4'처럼 사용하실 gpu의 개수를 입력해주세요
-    trainer = pl.Trainer(accelerator="gpu", devices=1, max_epochs=args.epoch, log_every_n_steps=1)
+    trainer = pl.Trainer(accelerator="gpu", devices=1, max_epochs=args.epoch, log_every_n_steps=1, callbacks=[early_stopping_callbacks])
 
     # 모델 저장을 위한 이름 지정, /경로를 언더바로 변환 및 에포크를 하나로
     model_name = re.sub('/', '_', args.model)
