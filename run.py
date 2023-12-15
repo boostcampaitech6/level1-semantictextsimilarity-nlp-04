@@ -48,11 +48,18 @@ if __name__ == '__main__':
                             config['data']['train_path'], config['data']['dev_path'],
                             config['data']['test_path'], config['data']['predict_path'])
     
-    # mdoel_name, learning_rate 지정
+    # model_name, learning_rate 지정
     model = Model(config['model']['model_name'], float(config['train']['learning_rate']))
 
+    # early stopping
+    early_stopping_callbacks = pl.callbacks.EarlyStopping(
+        monitor='val_loss',
+        patience=3,
+        mode='min'
+    )
+
     # gpu가 없으면 accelerator="cpu"로 변경해주세요, gpu가 여러개면 'devices=4'처럼 사용하실 gpu의 개수를 입력해주세요
-    trainer = pl.Trainer(accelerator="gpu", devices=1, max_epochs=config['train']['max_epochs'], log_every_n_steps=1)
+    trainer = pl.Trainer(accelerator="gpu", devices=1, max_epochs=config['train']['max_epochs'], log_every_n_steps=1, callbacks=[early_stopping_callbacks])
 
     # # Train part
     trainer.fit(model=model, datamodule=dataloader)
