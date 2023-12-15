@@ -27,7 +27,7 @@ class Model(pl.LightningModule):
     def forward(self, x):
         x = self.plm(x)['logits']
 
-        return x.squeeze(-1)
+        return x
 
     def training_step(self, batch, batch_idx):
         x, y = batch
