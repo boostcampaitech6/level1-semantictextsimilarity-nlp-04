@@ -19,8 +19,10 @@ pyvenv.cfg
 config
 config/
 config/config.yaml
+config/*.yaml
 *.yaml
 
+checkpoint/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -187,3 +189,4 @@ lightning_logs
 .config
 
 *.csv
+.gitignore
