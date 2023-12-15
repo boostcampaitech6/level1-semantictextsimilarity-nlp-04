@@ -61,8 +61,8 @@ if __name__ == '__main__':
     # model checkpoint
     checkpoint_callback = ModelCheckpoint(
         monitor='val_loss',
-        dirpath='your_model_path',
-        filename='your-model-{epoch:02d}-{val_loss:.2f}',
+        dirpath='output/',
+        filename=f'{model_name}_{epoch:02d}_{val_loss:.2f}',
         save_top_k=1,
         mode='min'
     )
