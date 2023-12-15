@@ -58,8 +58,17 @@ if __name__ == '__main__':
         mode='min'
     )
 
+    # model checkpoint
+    checkpoint_callback = ModelCheckpoint(
+        monitor='val_loss',
+        dirpath='your_model_path',
+        filename='your-model-{epoch:02d}-{val_loss:.2f}',
+        save_top_k=1,
+        mode='min'
+    )
+
     # gpu가 없으면 accelerator="cpu"로 변경해주세요, gpu가 여러개면 'devices=4'처럼 사용하실 gpu의 개수를 입력해주세요
-    trainer = pl.Trainer(accelerator="gpu", devices=1, max_epochs=config['train']['max_epochs'], log_every_n_steps=1, callbacks=[early_stopping_callbacks])
+    trainer = pl.Trainer(accelerator="gpu", devices=1, max_epochs=config['train']['max_epochs'], log_every_n_steps=1, callbacks=[early_stopping_callbacks, checkpoint_callback])
 
     # # Train part
     trainer.fit(model=model, datamodule=dataloader)
