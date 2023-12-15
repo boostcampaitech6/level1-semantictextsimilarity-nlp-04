@@ -50,6 +50,10 @@ if __name__ == '__main__':
     
     # model_name, learning_rate 지정
     model = Model(config['model']['model_name'], float(config['train']['learning_rate']))
+    
+    # 모델 저장을 위한 이름 지정, /경로를 언더바로 변환 및 에포크를 하나로
+    model_name = re.sub('/', '_', config['model']['model_name'])
+    epoch = config['train']['max_epochs']
 
     # early stopping
     early_stopping_callbacks = pl.callbacks.EarlyStopping(
@@ -58,16 +62,21 @@ if __name__ == '__main__':
         mode='min'
     )
 
+    # model checkpoint
+    checkpoint_callback = ModelCheckpoint(
+        monitor='val_loss',
+        dirpath= config['data']['checkpoint_path'],
+        filename=f'{model_name}_{epoch:02d}_{val_loss:.2f}',
+        save_top_k=1,
+        mode='min'
+    )
+
     # gpu가 없으면 accelerator="cpu"로 변경해주세요, gpu가 여러개면 'devices=4'처럼 사용하실 gpu의 개수를 입력해주세요
-    trainer = pl.Trainer(accelerator="gpu", devices=1, max_epochs=config['train']['max_epochs'], log_every_n_steps=1, callbacks=[early_stopping_callbacks])
+    trainer = pl.Trainer(accelerator="gpu", devices=1, max_epochs=epoch, log_every_n_steps=1, callbacks=[early_stopping_callbacks, checkpoint_callback])
 
     # # Train part
     trainer.fit(model=model, datamodule=dataloader)
     trainer.test(model=model, datamodule=dataloader)
-
-    # 모델 저장을 위한 이름 지정, /경로를 언더바로 변환 및 에포크를 하나로
-    model_name = re.sub('/', '_', config['model']['model_name'])
-    epoch = config['train']['max_epochs']
 
     # 학습이 완료된 모델을 저장합니다.
     torch.save(model, f'output/{model_name}_{epoch}.pt')

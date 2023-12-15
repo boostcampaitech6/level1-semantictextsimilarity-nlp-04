@@ -14,3 +14,4 @@ data:
     predict_path: './data/test.csv'
     submission_path: './data/sample_submission.csv'
     output_path: './output/'
+    checkpoint_path: './checkpoint/'
