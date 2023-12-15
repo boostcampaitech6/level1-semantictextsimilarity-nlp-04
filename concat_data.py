@@ -3,9 +3,9 @@ import wget
 import pandas as pd
 
 # download
-train_url = "https://github.com/kakaobrain/kor-nlu-datasets/blob/master/KorSTS/sts-train.tsv"
-dev_url = "https://github.com/kakaobrain/kor-nlu-datasets/blob/master/KorSTS/sts-dev.tsv"
-test_url = "https://github.com/kakaobrain/kor-nlu-datasets/blob/master/KorSTS/sts-test.tsv"
+train_url = "https://raw.githubusercontent.com/kakaobrain/kor-nlu-datasets/master/KorSTS/sts-train.tsv"
+dev_url = "https://raw.githubusercontent.com/kakaobrain/kor-nlu-datasets/master/KorSTS/sts-dev.tsv"
+test_url = "https://raw.githubusercontent.com/kakaobrain/kor-nlu-datasets/master/KorSTS/sts-test.tsv"
 
 wget.download(train_url)
 wget.download(dev_url)
