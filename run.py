@@ -1,119 +1,23 @@
-import argparse
 import yaml
 
-import random
-import re
-import shutil
-import warnings
 import pyprnt
 
-import pandas as pd
-
-from tqdm.auto import tqdm
-import pytorch_lightning as pl
-import transformers
-import torch
-import torchmetrics
-
-from data_loader import Dataloader, Dataset
+from data_loader import Dataloader
 from model import Model
 from inference import inference
+from train import set_seed, warning_block, parse_args, train
 
-def set_seed(n: int) -> None:
-    # seed 고정, 함수의 반환은 없습니다.
-    torch.manual_seed(0)
-    torch.cuda.manual_seed(0)
-    torch.cuda.manual_seed_all(0)
-    random.seed(0)
+def main(configs: dict) -> None:
 
-def warning_block() -> None:
-    # 경고 제거, 함수의 반환은 없습니다.
-    transformers.logging.set_verbosity_error()
-    warnings.filterwarnings("ignore", ".*does not have many workers.*")
-    warnings.filterwarnings("ignore", ".*TensorBoard support*")
-    warnings.filterwarnings("ignore", ".*target is close to zero*")
-    warnings.filterwarnings("ignore", ".*exists and is not*")
+    print("---------------------------------------------------------------")
+    pyprnt.prnt(configs)
+    print("---------------------------------------------------------------")
 
-def parse_args():
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument('--model_name', type=str, help='model_name overriding')
-    parser.add_argument('--batch_size', type=int)
-    parser.add_argument('--max_epoch', type=int)
-    parser.add_argument('--shuffle', type=bool)
-    parser.add_argument('--learning_rate', type=float)
-    parser.add_argument('--train_path')
-    parser.add_argument('--dev_path')
-    parser.add_argument('--test_path')
-    parser.add_argument('--predict_path')
-
-    return parser.parse_args()
-
-def main(config: dict) -> None:
-    '''
-    컨픽을 받아와서 넣어주는 역할을 합니다.
-    반환 없이 함수 내에서 파일을 생성하는 것으로 종료합니다.
-    '''
-
-    # 깔끔한 코드를 위한 변수명 지정
-    model_name = config['model']['model_name']
-    learning_rate = float(config['train']['learning_rate'])
-    batch_size = config['train']['batch_size']
-    max_epoch = config['train']['max_epoch']
-    shuffle = config['train']['shuffle']
-    train_path = config['data']['train_path']
-    dev_path = config['data']['dev_path']
-    test_path = config['data']['test_path']
-    predict_path = config['data']['predict_path']
-    output_path = config['data']['output_path']
-    checkpoint_path = config['data']['checkpoint_path']
-    saved_name = re.sub('/', '_', config['model']['model_name'])
+    train(configs)
+    print("***** Train done *****")
     
-
-    # dataloader와 model을 생성합니다.
-    # mdoel_name, batch_size, shuffle, train_path, dev_path, test_path, predict_path 지정
-    dataloader = Dataloader(model_name, batch_size, shuffle, train_path, dev_path, test_path, predict_path)
-    
-    # model_name, learning_rate 지정
-    model = Model(model_name, learning_rate)
-
-    # early stopping
-    early_stopping_callbacks = pl.callbacks.EarlyStopping(
-        monitor='val_loss',
-        patience=3,
-        mode='min'
-    )
-
-    # model checkpoint
-    checkpoint_callback = pl.callbacks.ModelCheckpoint(
-        monitor='val_loss',
-        dirpath= checkpoint_path,
-        filename=f'{saved_name}_{max_epoch:02d}_{{val_loss:.2f}}',
-        save_top_k=1,
-        mode='min'
-    )
-
-    # gpu가 없으면 accelerator="cpu"로 변경해주세요, gpu가 여러개면 'devices=4'처럼 사용하실 gpu의 개수를 입력해주세요
-    trainer = pl.Trainer(
-        accelerator="gpu",
-        devices=1,
-        max_epochs=max_epoch,
-        log_every_n_steps=1,
-        callbacks=[early_stopping_callbacks, checkpoint_callback]
-        )
-
-    # Train part
-    trainer.fit(model=model, datamodule=dataloader)
-    trainer.test(model=model, datamodule=dataloader)
-
-    # 모델 저장을 위한 이름 지정, /경로를 언더바로 변환 및 에포크를 하나로
-    saved_name = re.sub('/', '_', config['model']['model_name'])
-
-    # 학습이 완료된 모델을 저장합니다.
-    torch.save(model, f'{output_path}{saved_name}_{max_epoch}.pt')
-
-    # 데이터 파일을 복사합니다.
-    shutil.copyfile(train_path, f'{output_path}{saved_name}_{max_epoch}.csv')
+    inference(configs)
+    print("***** inference done *****")
 
 
 if __name__ == '__main__':
@@ -152,14 +56,4 @@ if __name__ == '__main__':
             yaml.dump(configs, f)
     
 
-    print("---------------------------------------------------------------")
-    pyprnt.prnt(configs)
-    print("---------------------------------------------------------------")
-
-    set_seed(0)
-    warning_block()
-
     main(configs)
-    print("***** Train done *****")
-    inference(configs)
-    print("***** inference done *****")
