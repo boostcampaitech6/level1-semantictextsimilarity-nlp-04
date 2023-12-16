@@ -1,5 +1,5 @@
 model:
-    model_name: 'team-lucid/deberta-v3-base-korean'
+    model_name: 'snunlp/KR-ELECTRA-discriminator'
     
 train:
     batch_size: 16
