@@ -14,7 +14,7 @@ import torch
 import torchmetrics
 import pytorch_lightning as pl
 
-from data_loader import Dataloader, Dataset
+from data_loader import Dataloader, DataloaderForInference
 from model import Model
 
 def warning_block() -> None:
@@ -57,7 +57,7 @@ def inference(config: dict) -> None:
     
     # dataloader와 model을 생성합니다.
     # model_name, batch_size, shuffle, train_path, dev_path, test_path, predict_path
-    dataloader = Dataloader(model_name, batch_size, shuffle, train_path, dev_path, test_path, predict_path)
+    dataloader = DataloaderForInference(model_name, batch_size, shuffle, train_path, dev_path, test_path, predict_path)
     
     # model_name, learning_rate
     model = Model(model_name, learning_rate)
@@ -92,7 +92,7 @@ if __name__ == '__main__':
 
     # 하이퍼 파라미터 등 각종 설정값을 입력받습니다
     # 터미널 실행 예시 : python3 inference.py --model='klue/roberta-small' 혹은
-    # 실행 시 --epoch 15 같이 입력하셔야 합니다. 인자를 입력하지 않으면 default 값이 기본으로 실행됩니다
+    # 실행 시 --epoch 15 같이 입력하셔서 컨픽을 덮어쓸 수 있씁니다. 인자를 입력하지 않으면 컨픽 값이 기본으로
     with open('config/config.yaml') as f:
         configs = yaml.safe_load(f)
 
@@ -126,7 +126,6 @@ if __name__ == '__main__':
     print("---------------------------------------------------------------")
     pyprnt.prnt(configs)
     print("---------------------------------------------------------------")
-
 
     warning_block()
     inference(configs)
