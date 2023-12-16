@@ -15,7 +15,7 @@ import transformers
 import torch
 import torchmetrics
 
-from data_loader import Dataloader, Dataset
+from data_loader import Dataloader
 from model import Model
 
 def set_seed(n: int) -> None:
@@ -48,11 +48,16 @@ def parse_args():
 
     return parser.parse_args()
 
-def main(config: dict) -> None:
+def train(config: dict) -> None:
     '''
     컨픽을 받아와서 넣어주는 역할을 합니다.
     반환 없이 함수 내에서 파일을 생성하는 것으로 종료합니다.
     '''
+
+    # 시드 고정
+    set_seed(0)
+    # 경고 제거
+    warning_block()
 
     # 깔끔한 코드를 위한 변수명 지정
     model_name = config['model']['model_name']
@@ -155,7 +160,4 @@ if __name__ == '__main__':
     pyprnt.prnt(configs)
     print("---------------------------------------------------------------")
 
-    set_seed(0)
-    warning_block()
-
-    main(configs)
+    train(configs)
