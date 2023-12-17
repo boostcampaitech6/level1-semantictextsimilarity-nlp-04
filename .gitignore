@@ -189,4 +189,8 @@ lightning_logs
 .config
 
 *.csv
+
+# wandb 로그는 commit에서 제외합니다.
+wandb/
+
 .gitignore

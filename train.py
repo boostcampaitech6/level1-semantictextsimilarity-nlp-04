@@ -7,16 +7,18 @@ import shutil
 import warnings
 import pyprnt
 
-import pandas as pd
-
-from tqdm.auto import tqdm
-import pytorch_lightning as pl
-import transformers
 import torch
-import torchmetrics
+import pytorch_lightning as pl
+from pytorch_lightning.loggers import WandbLogger
+
+import transformers
 
 from data_loader import Dataloader
 from model import Model
+
+import pytz
+from datetime import datetime
+
 
 def set_seed(n: int) -> None:
     # seed 고정, 함수의 반환은 없습니다.
@@ -72,6 +74,7 @@ def train(config: dict) -> None:
     checkpoint_path = config['data']['checkpoint_path']
     saved_name = re.sub('/', '_', config['model']['model_name'])
     
+    
 
     # dataloader와 model을 생성합니다.
     # mdoel_name, batch_size, shuffle, train_path, dev_path, test_path, predict_path 지정
@@ -95,6 +98,10 @@ def train(config: dict) -> None:
         save_top_k=1,
         mode='min'
     )
+    
+    # wandb
+    experiment_name = f"{model_name}_{max_epoch:02d}_{learning_rate}_{datetime.now(pytz.timezone('Asia/Seoul')):%y%m%d%H%M}"
+    wandb_logger = WandbLogger(name=experiment_name, project='monitor', entity='level1-semantictextsimilarity-nlp-04', log_model=True)
 
     # gpu가 없으면 accelerator="cpu"로 변경해주세요, gpu가 여러개면 'devices=4'처럼 사용하실 gpu의 개수를 입력해주세요
     trainer = pl.Trainer(
@@ -102,12 +109,15 @@ def train(config: dict) -> None:
         devices=1,
         max_epochs=max_epoch,
         log_every_n_steps=1,
-        callbacks=[early_stopping_callbacks, checkpoint_callback]
+        callbacks=[early_stopping_callbacks, checkpoint_callback],
+        logger = wandb_logger
         )
 
     # Train part
     trainer.fit(model=model, datamodule=dataloader)
     trainer.test(model=model, datamodule=dataloader)
+    
+    wandb_logger.experiment.finish()
 
     # 모델 저장을 위한 이름 지정, /경로를 언더바로 변환 및 에포크를 하나로
     saved_name = re.sub('/', '_', config['model']['model_name'])

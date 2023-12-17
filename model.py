@@ -41,7 +41,7 @@ class Model(pl.LightningModule):
 
     def test_step(self, batch, batch_idx):
         loss, pearson = self.step(batch)
-        self.log("test_pearson", pearson)
+        self.log("test_pearson", pearson, logger=True)
         
     def predict_step(self, batch, batch_idx):
         inputs = {key: val for key, val in batch.items() if key!= 'labels'}

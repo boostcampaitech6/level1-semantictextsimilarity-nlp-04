@@ -10,5 +10,5 @@ model:
 train:
   batch_size: 16
   learning_rate: 1e-5
-  max_epoch: 50
+  max_epoch: 10
   shuffle: true
