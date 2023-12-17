@@ -10,8 +10,8 @@ wget.download(train_url)
 wget.download(dev_url)
 
 # load dataframe
-orginal_train = pd.read_csv('../data/train.csv')
-orginal_dev = pd.read_csv('../data/dev.csv')
+orginal_train = pd.read_csv('./data/train.csv')
+orginal_dev = pd.read_csv('./data/dev.csv')
 
 additional_train = pd.read_csv('./sts-train.tsv', sep=r'\t')
 additional_dev = pd.read_csv('./sts-dev.tsv', sep=r'\t')
@@ -30,8 +30,8 @@ new_train = pd.concat([orginal_train, additional_train], join='inner', axis=0, i
 new_dev = pd.concat([orginal_dev, additional_dev], join='inner', axis=0, ignore_index=True)
 
 # save new file
-new_train.to_csv('../data/concat_train.csv', sep=',', encoding='utf-8', index=False)
-new_dev.to_csv('../data/concat_dev.csv', sep=',', encoding='utf-8', index=False)
+new_train.to_csv('./data/concat_train.csv', sep=',', encoding='utf-8', index=False)
+new_dev.to_csv('./data/concat_dev.csv', sep=',', encoding='utf-8', index=False)
 
 # remove downloaded file
 os.remove('./sts-train.tsv')
