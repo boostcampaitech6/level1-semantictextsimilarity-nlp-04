@@ -14,7 +14,7 @@ import torch
 import torchmetrics
 import pytorch_lightning as pl
 
-from data_loader import Dataloader, DataloaderForInference
+from data_loader import Dataloader
 from model import Model
 
 def warning_block() -> None:
@@ -35,7 +35,6 @@ def parse_args():
     parser.add_argument('--train_path')
     parser.add_argument('--dev_path')
     parser.add_argument('--test_path')
-    parser.add_argument('--predict_path')
 
     return parser.parse_args()
 
@@ -49,15 +48,14 @@ def inference(config: dict) -> None:
     shuffle = config['train']['shuffle']
     train_path = config['data']['train_path']
     dev_path = config['data']['dev_path']
-    predict_path = config['data']['predict_path']
-    output_path = config['data']['output_path']
+    test_path = config['data']['test_path']
     submission_path = config['data']['submission_path']
+    output_path = config['data']['output_path']
     saved_name = re.sub('/', '_', config['model']['model_name'])
-    test_path = f'{output_path}{saved_name}_{max_epoch}.csv'
     
     # dataloader와 model을 생성합니다.
-    # model_name, batch_size, shuffle, train_path, dev_path, test_path, predict_path
-    dataloader = DataloaderForInference(model_name, batch_size, shuffle, train_path, dev_path, test_path, predict_path)
+    # model_name, batch_size, shuffle, train_path, dev_path, test_path
+    dataloader = Dataloader(model_name, batch_size, shuffle, train_path, dev_path, test_path)
     
     # model_name, learning_rate
     model = Model(model_name, learning_rate)
@@ -116,8 +114,6 @@ if __name__ == '__main__':
             configs['data']['dev_path'] = args.dev_path
         if args.test_path:
             configs['data']['test_path'] = args.test_path
-        if args.predict_path:
-            configs['data']['predict_path'] = args.predict_path
 
         # config 파일에 덮어씌우고 저장
         with open('config/config.yaml', 'w') as f:

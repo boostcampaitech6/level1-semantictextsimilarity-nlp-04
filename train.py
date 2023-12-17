@@ -68,7 +68,6 @@ def train(config: dict) -> None:
     train_path = config['data']['train_path']
     dev_path = config['data']['dev_path']
     test_path = config['data']['test_path']
-    predict_path = config['data']['predict_path']
     output_path = config['data']['output_path']
     checkpoint_path = config['data']['checkpoint_path']
     saved_name = re.sub('/', '_', config['model']['model_name'])
@@ -76,7 +75,7 @@ def train(config: dict) -> None:
 
     # dataloader와 model을 생성합니다.
     # mdoel_name, batch_size, shuffle, train_path, dev_path, test_path, predict_path 지정
-    dataloader = Dataloader(model_name, batch_size, shuffle, train_path, dev_path, test_path, predict_path)
+    dataloader = Dataloader(model_name, batch_size, shuffle, train_path, dev_path, test_path)
     
     # model_name, learning_rate 지정
     model = Model(model_name, learning_rate)
