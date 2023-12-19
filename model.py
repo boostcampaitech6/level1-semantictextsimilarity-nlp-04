@@ -26,7 +26,7 @@ class Model(pl.LightningModule):
         labels = batch['labels']
         predictions = self(**inputs)
         loss = self.loss_func(predictions, labels.float())
-        pearson = pearson_corrcoef(predictions, labels.float())
+        pearson = pearson_corrcoef(predictions, labels.to(torch.float64))
         return loss, pearson
 
     def training_step(self, batch, batch_idx):
