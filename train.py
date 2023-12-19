@@ -2,6 +2,7 @@ import argparse
 import yaml
 
 import random
+import os
 import re
 import shutil
 import warnings
@@ -19,13 +20,16 @@ from model import Model
 import pytz
 from datetime import datetime
 
+import numpy as np
 
-def set_seed(n: int) -> None:
-    # seed 고정, 함수의 반환은 없습니다.
-    torch.manual_seed(0)
-    torch.cuda.manual_seed(0)
-    torch.cuda.manual_seed_all(0)
-    random.seed(0)
+def set_seed(seed:int=42) -> None:
+    random.seed(seed)
+    np.random.seed(seed)
+    os.environ["PYTHONHASHSEED"] = str(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = True
 
 def warning_block() -> None:
     # 경고 제거, 함수의 반환은 없습니다.

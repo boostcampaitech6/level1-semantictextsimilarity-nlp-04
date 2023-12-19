@@ -5,7 +5,7 @@ import pandas as pd
 
 import torch
 import pytorch_lightning as pl
-from transformers import AutoModelForSequenceClassification
+from transformers import AutoModelForSequenceClassification, get_linear_schedule_with_warmup
 from torchmetrics.functional import pearson_corrcoef
 
 
@@ -26,21 +26,22 @@ class Model(pl.LightningModule):
         labels = batch['labels']
         predictions = self(**inputs)
         loss = self.loss_func(predictions, labels.float())
-        pearson = pearson_corrcoef(predictions, labels.float())
+        pearson = pearson_corrcoef(predictions, labels.to(torch.float64))
         return loss, pearson
 
     def training_step(self, batch, batch_idx):
-        loss, _ = self.step(batch)
-        self.log("train_loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
-        return loss
+        train_loss, pearson = self.step(batch)
+        self.log("train_loss", train_loss, logger=True)
+        self.log("train_pearson", pearson, logger=True)
+        return train_loss
 
     def validation_step(self, batch, batch_idx):
-        loss, pearson = self.step(batch)
-        self.log("val_loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
-        self.log("val_pearson", pearson, on_step=True, on_epoch=True, prog_bar=True, logger=True)
+        val_loss, pearson = self.step(batch)
+        self.log("val_loss", val_loss, logger=True)
+        self.log("val_pearson", pearson, logger=True)
 
     def test_step(self, batch, batch_idx):
-        loss, pearson = self.step(batch)
+        test_loss, pearson = self.step(batch)
         self.log("test_pearson", pearson, logger=True)
         
     def predict_step(self, batch, batch_idx):
@@ -48,4 +49,18 @@ class Model(pl.LightningModule):
         return self(**inputs)
 
     def configure_optimizers(self):
-        return torch.optim.AdamW(self.parameters(), lr=self.lr)
+        optimizer = torch.optim.AdamW(self.parameters(), lr=self.lr)
+        scheduler = {
+            'scheduler': get_linear_schedule_with_warmup(
+                optimizer,
+                num_warmup_steps= 0.1 * (self.total_steps),
+                num_training_steps=self.total_steps),
+            'interval': 'step'
+        }
+        return {'optimizer': optimizer, 'lr_scheduler': scheduler}
+
+    def setup(self, stage='fit'):
+        if stage =='fit':
+            self.total_steps=self.trainer.max_epochs * len(self.trainer.datamodule.train_dataloader())
+
+
