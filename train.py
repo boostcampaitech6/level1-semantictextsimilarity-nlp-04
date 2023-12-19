@@ -20,7 +20,7 @@ import pytz
 from datetime import datetime
 
 
-def seed_seed(seed=42: int) -> None:
+def set_seed(seed=42: int) -> None:
     random.seed(seed)
     np.random.seed(seed)
     os.environ["PYTHONHASHSEED"] = str(seed)
