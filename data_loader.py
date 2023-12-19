@@ -29,7 +29,7 @@ class Dataset(torch.utils.data.Dataset):
 
 
 class Dataloader(pl.LightningDataModule):
-    def __init__(self, model_name, batch_size, shuffle, train_path, dev_path, test_path):
+    def __init__(self, model_name, batch_size, shuffle, train_path, dev_path, val_path, test_path):
         super().__init__()
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         self.batch_size = batch_size
@@ -37,6 +37,7 @@ class Dataloader(pl.LightningDataModule):
 
         self.train_path = train_path
         self.dev_path = dev_path
+        self.val_path = val_path
         self.test_path = test_path
 
         self.collate_fn = DataCollatorWithPadding(tokenizer=self.tokenizer, return_tensors='pt')
@@ -46,7 +47,7 @@ class Dataloader(pl.LightningDataModule):
             self.train_dataset = Dataset(self.tokenizer, self.train_path)
             self.val_dataset = Dataset(self.tokenizer, self.dev_path)
         else:
-            self.test_dataset = Dataset(self.tokenizer, self.dev_path)
+            self.test_dataset = Dataset(self.tokenizer, self.val_path)
             self.predict_dataset = Dataset(self.tokenizer, self.test_path, is_test=True)
 
 

@@ -49,6 +49,7 @@ def parse_args():
     parser.add_argument('--learning_rate', type=float)
     parser.add_argument('--train_path')
     parser.add_argument('--dev_path')
+    parser.add_argument('--val_path')
     parser.add_argument('--test_path')
     parser.add_argument('--predict_path')
 
@@ -73,6 +74,7 @@ def train(config: dict) -> None:
     shuffle = config['train']['shuffle']
     train_path = config['data']['train_path']
     dev_path = config['data']['dev_path']
+    val_path = config['data']['val_path']
     test_path = config['data']['test_path']
     output_path = config['data']['output_path']
     checkpoint_path = config['data']['checkpoint_path']
@@ -82,7 +84,7 @@ def train(config: dict) -> None:
 
     # dataloader와 model을 생성합니다.
     # mdoel_name, batch_size, shuffle, train_path, dev_path, test_path, predict_path 지정
-    dataloader = Dataloader(model_name, batch_size, shuffle, train_path, dev_path, test_path)
+    dataloader = Dataloader(model_name, batch_size, shuffle, train_path, dev_path, val_path, test_path)
     
     # model_name, learning_rate 지정
     model = Model(model_name, learning_rate)
@@ -156,7 +158,9 @@ if __name__ == '__main__':
         if args.learning_rate:
             configs['train']['learning_rate'] = args.learning_rate
         if args.train_path:
-            configs['data']['train_path'] = args.train_path
+            configs['data']['train_path'] = args.train_path        
+        if args.val_path:
+            configs['data']['val_path'] = args.val_path
         if args.dev_path:
             configs['data']['dev_path'] = args.dev_path
         if args.test_path:
