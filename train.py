@@ -2,6 +2,7 @@ import argparse
 import yaml
 
 import random
+import os
 import re
 import shutil
 import warnings
@@ -19,8 +20,9 @@ from model import Model
 import pytz
 from datetime import datetime
 
+import numpy as np
 
-def set_seed(seed=42: int) -> None:
+def set_seed(seed:int=42) -> None:
     random.seed(seed)
     np.random.seed(seed)
     os.environ["PYTHONHASHSEED"] = str(seed)
