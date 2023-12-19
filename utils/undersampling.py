@@ -2,11 +2,11 @@ import pandas as pd
 import numpy as np
 
 
-def delete_random(df, column, value, perc):
+def delete_random(df, column, value, percent):
     np.random.seed(0)
     mask = df[column] == value
     indices = df[mask].index
-    remove_n = int(perc * len(indices))
+    remove_n = int(percent * len(indices))
     drop_indices = np.random.choice(indices, remove_n, replace=False)
     df = df.drop(drop_indices)
     return df
