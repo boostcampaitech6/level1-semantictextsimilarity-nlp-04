@@ -29,7 +29,7 @@ class Dataset(torch.utils.data.Dataset):
 
 
 class Dataloader(pl.LightningDataModule):
-    def __init__(self, model_name, batch_size, shuffle, train_path, dev_path, test_path):
+    def __init__(self, model_name, batch_size, shuffle, train_path, dev_path, val_path, predict_path):
         super().__init__()
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         self.batch_size = batch_size
@@ -37,27 +37,28 @@ class Dataloader(pl.LightningDataModule):
 
         self.train_path = train_path
         self.dev_path = dev_path
-        self.test_path = test_path
+        self.val_path = val_path
+        self.predict_path = predict_path
 
         self.collate_fn = DataCollatorWithPadding(tokenizer=self.tokenizer, return_tensors='pt')
 
     def setup(self, stage='fit'):
         if stage == 'fit':
             self.train_dataset = Dataset(self.tokenizer, self.train_path)
-            self.val_dataset = Dataset(self.tokenizer, self.dev_path)
+            self.dev_dataset = Dataset(self.tokenizer, self.dev_path)
         else:
-            self.test_dataset = Dataset(self.tokenizer, self.dev_path)
-            self.predict_dataset = Dataset(self.tokenizer, self.test_path, is_test=True)
+            self.val_dataset = Dataset(self.tokenizer, self.val_path)
+            self.predict_dataset = Dataset(self.tokenizer, self.predict_path, is_test=True)
 
 
     def train_dataloader(self):
         return torch.utils.data.DataLoader(self.train_dataset, batch_size=self.batch_size, shuffle=True, collate_fn=self.collate_fn)
 
     def val_dataloader(self):
-        return torch.utils.data.DataLoader(self.val_dataset, batch_size=self.batch_size, collate_fn=self.collate_fn)
+        return torch.utils.data.DataLoader(self.dev_dataset, batch_size=self.batch_size, collate_fn=self.collate_fn)
 
     def test_dataloader(self):
-        return torch.utils.data.DataLoader(self.test_dataset, batch_size=self.batch_size, collate_fn=self.collate_fn)
+        return torch.utils.data.DataLoader(self.val_dataset, batch_size=self.batch_size, collate_fn=self.collate_fn)
 
     def predict_dataloader(self):
         return torch.utils.data.DataLoader(self.predict_dataset, batch_size=self.batch_size, collate_fn=self.collate_fn)

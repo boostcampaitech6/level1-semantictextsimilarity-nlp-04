@@ -1,10 +1,11 @@
 data:
   checkpoint_path: ./checkpoint/
-  dev_path: ./data/dev.csv
+  dev_path: ./data/dev_balanced.csv
   output_path: ./output/
+  predict_path: ./data/test.csv
   submission_path: ./data/sample_submission.csv
-  test_path: ./data/test.csv
-  train_path: ./data/train.csv
+  train_path: ./data/train_balanced.csv
+  val_path: ./data/dev.csv
 model:
   model_name: team-lucid/deberta-v3-base-korean
 train:
