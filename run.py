@@ -46,8 +46,8 @@ if __name__ == '__main__':
             configs['data']['train_path'] = args.train_path
         if args.dev_path:
             configs['data']['dev_path'] = args.dev_path
-        if args.test_path:
-            configs['data']['test_path'] = args.test_path
+        if args.val_path:
+            configs['data']['val_path'] = args.val_path
         if args.predict_path:
             configs['data']['predict_path'] = args.predict_path
 
@@ -55,5 +55,4 @@ if __name__ == '__main__':
         with open('config/config.yaml', 'w') as f:
             yaml.dump(configs, f)
     
-
     main(configs)
