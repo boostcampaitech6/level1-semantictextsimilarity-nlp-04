@@ -8,9 +8,13 @@ import shutil
 import warnings
 import pyprnt
 
+import numpy as np
+import pandas as pd
+
 import torch
 import pytorch_lightning as pl
 from pytorch_lightning.loggers import WandbLogger
+import wandb
 
 import transformers
 
@@ -20,7 +24,6 @@ from model import Model
 import pytz
 from datetime import datetime
 
-import numpy as np
 
 def set_seed(seed:int=42) -> None:
     random.seed(seed)
@@ -50,7 +53,6 @@ def parse_args():
     parser.add_argument('--train_path')
     parser.add_argument('--dev_path')
     parser.add_argument('--val_path')
-    parser.add_argument('--test_path')
     parser.add_argument('--predict_path')
 
     return parser.parse_args()
@@ -75,7 +77,7 @@ def train(config: dict) -> None:
     train_path = config['data']['train_path']
     dev_path = config['data']['dev_path']
     val_path = config['data']['val_path']
-    test_path = config['data']['test_path']
+    predict_path = config['data']['predict_path']
     output_path = config['data']['output_path']
     checkpoint_path = config['data']['checkpoint_path']
     saved_name = re.sub('/', '_', config['model']['model_name'])
@@ -84,7 +86,7 @@ def train(config: dict) -> None:
 
     # dataloader와 model을 생성합니다.
     # mdoel_name, batch_size, shuffle, train_path, dev_path, test_path, predict_path 지정
-    dataloader = Dataloader(model_name, batch_size, shuffle, train_path, dev_path, val_path, test_path)
+    dataloader = Dataloader(model_name, batch_size, shuffle, train_path, dev_path, val_path, predict_path)
     
     # model_name, learning_rate 지정
     model = Model(model_name, learning_rate)
@@ -121,7 +123,16 @@ def train(config: dict) -> None:
 
     # Train part
     trainer.fit(model=model, datamodule=dataloader)
+
+    # Validation part
     trainer.test(model=model, datamodule=dataloader)
+    valid_predictions = torch.cat(model.predictions, dim=0).numpy()
+    validation_df = pd.read_csv(val_path)
+    validation_df['prediction'] = valid_predictions
+
+    # wandb에 dataframe을 업로드
+    validation_table = wandb.Table(dataframe=validation_df)
+    wandb.log({'validation_data': validation_table})
     
     wandb_logger.experiment.finish()
 
@@ -163,8 +174,6 @@ if __name__ == '__main__':
             configs['data']['val_path'] = args.val_path
         if args.dev_path:
             configs['data']['dev_path'] = args.dev_path
-        if args.test_path:
-            configs['data']['test_path'] = args.test_path
         if args.predict_path:
             configs['data']['predict_path'] = args.predict_path
 

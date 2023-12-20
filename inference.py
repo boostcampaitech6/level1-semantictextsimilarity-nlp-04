@@ -34,7 +34,8 @@ def parse_args():
     parser.add_argument('--learning_rate', type=float)
     parser.add_argument('--train_path')
     parser.add_argument('--dev_path')
-    parser.add_argument('--test_path')
+    parser.add_argument('--val_path')
+    parser.add_argument('--predict_path')
 
     return parser.parse_args()
 
@@ -49,14 +50,14 @@ def inference(config: dict) -> None:
     train_path = config['data']['train_path']
     dev_path = config['data']['dev_path']
     val_path = config['data']['val_path']
-    test_path = config['data']['test_path']
+    predict_path = config['data']['predict_path']
     submission_path = config['data']['submission_path']
     output_path = config['data']['output_path']
     saved_name = re.sub('/', '_', config['model']['model_name'])
     
     # dataloader와 model을 생성합니다.
     # model_name, batch_size, shuffle, train_path, dev_path, test_path
-    dataloader = Dataloader(model_name, batch_size, shuffle, train_path, dev_path, val_path, test_path)
+    dataloader = Dataloader(model_name, batch_size, shuffle, train_path, dev_path, val_path, predict_path)
     
     # model_name, learning_rate
     model = Model(model_name, learning_rate)
@@ -115,8 +116,8 @@ if __name__ == '__main__':
             configs['data']['dev_path'] = args.dev_path
         if args.val_path:
             configs['data']['val_path'] = args.val_path
-        if args.test_path:
-            configs['data']['test_path'] = args.test_path
+        if args.predict_path:
+            configs['data']['predict_path'] = args.predict_path
 
         # config 파일에 덮어씌우고 저장
         with open('config/config.yaml', 'w') as f:

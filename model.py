@@ -41,15 +41,21 @@ class Model(pl.LightningModule):
         self.log("val_pearson", pearson, logger=True)
 
     def test_step(self, batch, batch_idx):
-        test_loss, pearson = self.step(batch)
+        inputs = {key: val for key, val in batch.items() if key!= 'labels'}
+        labels = batch['labels']
+        predictions = self(**inputs)
+        self.predictions.append(predictions.detach().cpu())
+        pearson = pearson_corrcoef(predictions, labels.to(torch.float64))
         self.log("test_pearson", pearson, logger=True)
-        
+            
     def predict_step(self, batch, batch_idx):
         inputs = {key: val for key, val in batch.items() if key!= 'labels'}
         return self(**inputs)
 
     def configure_optimizers(self):
         optimizer = torch.optim.AdamW(self.parameters(), lr=self.lr)
+
+        # Attached Learning Rate Scheduler
         scheduler = {
             'scheduler': get_linear_schedule_with_warmup(
                 optimizer,
@@ -62,5 +68,7 @@ class Model(pl.LightningModule):
     def setup(self, stage='fit'):
         if stage =='fit':
             self.total_steps=self.trainer.max_epochs * len(self.trainer.datamodule.train_dataloader())
+        elif stage == 'test':
+            self.predictions = []
 
 
