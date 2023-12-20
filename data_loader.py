@@ -1,11 +1,8 @@
-import argparse
-import random
-
 import pandas as pd
 
+import torch
 import pytorch_lightning as pl
 from transformers import AutoTokenizer, DataCollatorWithPadding
-import torch
 
 
 class Dataset(torch.utils.data.Dataset):
@@ -24,7 +21,8 @@ class Dataset(torch.utils.data.Dataset):
         encoded = self.tokenizer(sentence_1, sentence_2, truncation=True, return_tensors='pt')
         item = {key: val.squeeze(0) for key, val in encoded.items()}
         if not self.is_test:
-            item['labels'] = torch.tensor(self.data.iloc[idx]['label'])
+            item['regression_label'] = torch.tensor(self.data.iloc[idx]['label'])
+            item['binary_label'] = torch.tensor(self.data.iloc[idx]['binary-label'])
         return item
 
 
@@ -49,7 +47,6 @@ class Dataloader(pl.LightningDataModule):
         else:
             self.val_dataset = Dataset(self.tokenizer, self.val_path)
             self.predict_dataset = Dataset(self.tokenizer, self.predict_path, is_test=True)
-
 
     def train_dataloader(self):
         return torch.utils.data.DataLoader(self.train_dataset, batch_size=self.batch_size, shuffle=True, collate_fn=self.collate_fn)
