@@ -13,7 +13,7 @@ class Model(pl.LightningModule):
     def __init__(self, model_name, lr):
         super().__init__()
         self.save_hyperparameters()
-        self.model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=1)
+        self.model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=1, hidden_dropout_prob=0.3)
         self.lr = lr
         self.loss_func = torch.nn.L1Loss()
 

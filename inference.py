@@ -48,6 +48,7 @@ def inference(config: dict) -> None:
     shuffle = config['train']['shuffle']
     train_path = config['data']['train_path']
     dev_path = config['data']['dev_path']
+    val_path = config['data']['val_path']
     test_path = config['data']['test_path']
     submission_path = config['data']['submission_path']
     output_path = config['data']['output_path']
@@ -55,7 +56,7 @@ def inference(config: dict) -> None:
     
     # dataloader와 model을 생성합니다.
     # model_name, batch_size, shuffle, train_path, dev_path, test_path
-    dataloader = Dataloader(model_name, batch_size, shuffle, train_path, dev_path, test_path)
+    dataloader = Dataloader(model_name, batch_size, shuffle, train_path, dev_path, val_path, test_path)
     
     # model_name, learning_rate
     model = Model(model_name, learning_rate)
@@ -112,6 +113,8 @@ if __name__ == '__main__':
             configs['data']['train_path'] = args.train_path
         if args.dev_path:
             configs['data']['dev_path'] = args.dev_path
+        if args.val_path:
+            configs['data']['val_path'] = args.val_path
         if args.test_path:
             configs['data']['test_path'] = args.test_path
 
