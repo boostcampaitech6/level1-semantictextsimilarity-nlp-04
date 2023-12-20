@@ -64,7 +64,7 @@ def train(config: dict) -> None:
     '''
 
     # 시드 고정
-    set_seed(0)
+    set_seed(666)
     # 경고 제거
     warning_block()
 
@@ -90,6 +90,11 @@ def train(config: dict) -> None:
     
     # model_name, learning_rate 지정
     model = Model(model_name, learning_rate)
+
+    # <PERSON> 토큰 추가 및 토크나이저 임베딩
+    new_tokens = ['<PERSON>']
+    dataloader.token_add(new_tokens)
+    model.model.resize_token_embeddings(len(dataloader.tokenizer))
 
     # early stopping
     early_stopping_callbacks = pl.callbacks.EarlyStopping(
