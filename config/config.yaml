@@ -1,15 +1,15 @@
 data:
   checkpoint_path: ./checkpoint/
-  dev_path: ./data/dev_balanced.csv
+  dev_path: ./data/dev_400.csv
   output_path: ./output/
   predict_path: ./data/test.csv
   submission_path: ./data/sample_submission.csv
-  train_path: ./data/train_balanced.csv
-  val_path: ./data/dev.csv
+  train_path: ./data/train.csv
+  val_path: ./data/dev_150.csv
 model:
-  model_name: team-lucid/deberta-v3-xlarge-korean
+  model_name: team-lucid/deberta-v3-base-korean
 train:
   batch_size: 16
   learning_rate: 1e-5
-  max_epoch: 50
+  max_epoch: 10
   shuffle: true

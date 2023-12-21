@@ -2,82 +2,88 @@ import torch
 import torch.nn.functional as F
 import pytorch_lightning as pl
 from transformers import AutoModel, get_linear_schedule_with_warmup
-from torchmetrics.functional import pearson_corrcoef
+from torchmetrics.regression import PearsonCorrCoef
 from torchmetrics.classification import BinaryF1Score
-
 
 
 class Model(pl.LightningModule):
     def __init__(self, model_name, lr):
         super().__init__()
         self.save_hyperparameters()
-        self.model = AutoModel.from_pretrained(model_name)
+        self.model = AutoModel.from_pretrained(model_name, hidden_dropout_prob=0.2)
         self.classification_head = torch.nn.Linear(self.model.config.hidden_size, 1)
-        self.regression_head = torch.nn.Linear(self.model.config.hidden_size, 1)
-        self.stacking_head = torch.nn.Linear(2, 1)
+        self.regression_head_0 = torch.nn.Linear(self.model.config.hidden_size, 1)
+        self.regression_head_1 = torch.nn.Linear(self.model.config.hidden_size, 1)
         self.lr = lr
-        self.f1 = BinaryF1Score()
+        self.f1_score = BinaryF1Score()
+        self.pearson_corrcoef = PearsonCorrCoef()
+        self._init_weights()
+
+    def _init_weights(self):
+        for m in [self.classification_head, self.regression_head_0, self.regression_head_1]:
+            torch.nn.init.xavier_uniform_(m.weight)
+            torch.nn.init.zeros_(m.bias)
 
     def forward(self, input_ids, attention_mask, token_type_ids):
         outputs = self.model(input_ids, attention_mask, token_type_ids)
-        if 'pooler_output' in outputs:
-            pooled_output = outputs.pooler_output
-        else:
-            pooled_output = outputs.last_hidden_state[:, 0]
+        pooled_output = outputs.get('pooler_output', outputs.last_hidden_state[:, 0])
         classification_output = self.classification_head(pooled_output)
-        regression_output = self.regression_head(pooled_output)
-        combined_output = torch.concat((classification_output, regression_output), dim=1)
-        final_output = self.stacking_head(combined_output)
-        return classification_output.squeeze(), regression_output.squeeze(), final_output.squeeze()
+        classifiaction_probs = torch.sigmoid(classification_output)
+        binary = (classifiaction_probs > 0.5).int()
+        regression_output = torch.where(binary == 1, self.regression_head_1(pooled_output), self.regression_head_0(pooled_output))
+        return classification_output.squeeze(), regression_output.squeeze()
 
     def step(self, batch):
+        # Feedforward
         input_ids, attention_mask, token_type_ids, regression_labels, binary_labels = batch['input_ids'], batch['attention_mask'], batch['token_type_ids'], batch['regression_label'], batch['binary_label']
-        classification_output, regression_output, final_output = self(input_ids, attention_mask, token_type_ids)
+        classification_output, regression_output = self(input_ids, attention_mask, token_type_ids)
 
+        # Loss functions
         classification_loss = F.binary_cross_entropy_with_logits(classification_output, binary_labels.float())
-        classification_probs = torch.sigmoid(classification_output)
-        classification_preds = (classification_probs > 0.5).int()
-        self.f1(classification_preds, binary_labels.int())
-        
         regression_loss = F.l1_loss(regression_output, regression_labels)
+        
+        # Loss
+        combined_loss = classification_loss + regression_loss
+        
+        # Evaluation metrics
+        classification_probs = torch.sigmoid(classification_output)
+        classification_preds = classification_probs > 0.5
+        self.f1_score(classification_preds, binary_labels.int())
+        self.pearson_corrcoef(regression_output, regression_labels.float())
 
-        final_loss = F.mse_loss(final_output, regression_labels)
-        pearson = pearson_corrcoef(final_output, regression_labels.to(torch.float64))
-
-        combined_loss = classification_loss + regression_loss + final_loss
-
-        return final_output, pearson, combined_loss
+        return regression_output, combined_loss
 
     def training_step(self, batch, batch_idx):
-        _, pearson, combined_loss = self.step(batch)
+        _, combined_loss = self.step(batch)
         self.log_dict({
             'train_loss': combined_loss, 
-            'train_pearson': pearson,
-            'train_f1': self.f1}, 
+            'train_pearson': self.pearson_corrcoef,
+            'train_f1': self.f1_score}, 
             logger=True)
         return combined_loss
 
     def validation_step(self, batch, batch_idx):
-        _, pearson, combined_loss = self.step(batch)
+        _, combined_loss = self.step(batch)
         self.log_dict({
             'val_loss': combined_loss, 
-            'val_pearson': pearson,
-            'val_f1': self.f1}, 
+            'val_pearson': self.pearson_corrcoef,
+            'val_f1': self.f1_score}, 
             logger=True)
         
     def test_step(self, batch, batch_idx):
-        final_output, pearson, combined_loss = self.step(batch)
-        self.predictions.append(final_output.detach().cpu())
+        regression_output, combined_loss = self.step(batch)
+        self.predictions.append(regression_output.detach().cpu())
         self.log_dict({
             'test_loss': combined_loss, 
-            'test_pearson': pearson,
-            'test_f1': self.f1}, 
+            'test_pearson': self.pearson_corrcoef,
+            'test_f1': self.f1_score}, 
             logger=True)
             
     def predict_step(self, batch, batch_idx):
+        self.eval()
         input_ids, attention_mask, token_type_ids = batch['input_ids'], batch['attention_mask'], batch['token_type_ids']
-        _, _, predictions = self(input_ids, attention_mask, token_type_ids)
-        return predictions
+        _, predictions = self(input_ids, attention_mask, token_type_ids)
+        return predictions.detach().cpu()
 
     def configure_optimizers(self):
         optimizer = torch.optim.AdamW(self.parameters(), lr=self.lr)
@@ -85,7 +91,7 @@ class Model(pl.LightningModule):
         scheduler = {
             'scheduler': get_linear_schedule_with_warmup(
                 optimizer,
-                num_warmup_steps= 0.1 * (self.total_steps),
+                num_warmup_steps= 0.05 * (self.total_steps),
                 num_training_steps=self.total_steps),
             'interval': 'step'
         }

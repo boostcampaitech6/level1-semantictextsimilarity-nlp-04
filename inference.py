@@ -61,14 +61,7 @@ def inference(config: dict) -> None:
     
     # model_name, learning_rate
     model = Model(model_name, learning_rate)
-
-    # early stopping
-    early_stopping_callbacks = pl.callbacks.EarlyStopping(
-        monitor='val_loss',
-        patience=3,
-        mode='min'
-    )
-
+    
     # gpu가 없으면 accelerator="cpu"로 변경해주세요, gpu가 여러개면 'devices=4'처럼 사용하실 gpu의 개수를 입력해주세요
     trainer = pl.Trainer(accelerator="gpu", devices=1, max_epochs=max_epoch, log_every_n_steps=1)
 
