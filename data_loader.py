@@ -62,3 +62,9 @@ class Dataloader(pl.LightningDataModule):
 
     def predict_dataloader(self):
         return torch.utils.data.DataLoader(self.predict_dataset, batch_size=self.batch_size, collate_fn=self.collate_fn)
+
+    def token_add(self, tokens: list) -> None:
+        new_tokens = tokens
+
+        new_tokens = set(new_tokens) - set(self.tokenizer.vocab.keys())
+        self.tokenizer.add_tokens(list(new_tokens))
