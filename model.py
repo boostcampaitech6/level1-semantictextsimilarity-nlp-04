@@ -1,5 +1,5 @@
 import torch
-import torch.nn.functional as F
+import torch.nn as nn
 import pytorch_lightning as pl
 from transformers import AutoModel, get_linear_schedule_with_warmup
 from torchmetrics.regression import PearsonCorrCoef
@@ -10,13 +10,21 @@ class Model(pl.LightningModule):
     def __init__(self, model_name, lr):
         super().__init__()
         self.save_hyperparameters()
-        self.model = AutoModel.from_pretrained(model_name, hidden_dropout_prob=0.2)
-        self.classification_head = torch.nn.Linear(self.model.config.hidden_size, 1)
-        self.regression_head_0 = torch.nn.Linear(self.model.config.hidden_size, 1)
-        self.regression_head_1 = torch.nn.Linear(self.model.config.hidden_size, 1)
         self.lr = lr
+        # Models
+        self.classification_model = AutoModel.from_pretrained(model_name)
+        self.regression_model = AutoModel.from_pretrained(model_name)
+        # Heads
+        self.classification_head = torch.nn.Linear(self.classification_model.config.hidden_size, 1)
+        self.regression_head_0 = torch.nn.Linear(self.regression_model.config.hidden_size, 1)
+        self.regression_head_1 = torch.nn.Linear(self.regression_model.config.hidden_size, 1)
+        # Loss functions
+        self.classifier_loss_fn = nn.BCEWithLogitsLoss() 
+        self.regressor_loss_fn = nn.L1Loss()
+        # Evaluation metrics
         self.f1_score = BinaryF1Score()
         self.pearson_corrcoef = PearsonCorrCoef()
+        # Weight initialization
         self._init_weights()
 
     def _init_weights(self):
@@ -25,30 +33,45 @@ class Model(pl.LightningModule):
             torch.nn.init.zeros_(m.bias)
 
     def forward(self, input_ids, attention_mask, token_type_ids):
-        outputs = self.model(input_ids, attention_mask, token_type_ids)
-        pooled_output = outputs.get('pooler_output', outputs.last_hidden_state[:, 0])
-        classification_output = self.classification_head(pooled_output)
+        # Classification
+        cls_outputs = self.classification_model(input_ids, attention_mask, token_type_ids)
+        cls_pooled_output = cls_outputs.get('pooler_output', cls_outputs.last_hidden_state[:, 0])
+        classification_output = self.classification_head(cls_pooled_output)
         classifiaction_probs = torch.sigmoid(classification_output)
-        binary = (classifiaction_probs > 0.5).int()
-        regression_output = torch.where(binary == 1, self.regression_head_1(pooled_output), self.regression_head_0(pooled_output))
+        binary = (classifiaction_probs > 0.5).float()
+
+        # Regression
+        reg_outputs = self.regression_model(input_ids, attention_mask, token_type_ids)
+        reg_pooled_output = reg_outputs.get('pooler_output', reg_outputs.last_hidden_state[:, 0])
+        regression_output_0 = self.regression_head_0(reg_pooled_output)
+        regression_output_1 = self.regression_head_1(reg_pooled_output)
+        regression_output = torch.where(binary == 1, regression_output_1, regression_output_0)
+
         return classification_output.squeeze(), regression_output.squeeze()
 
     def step(self, batch):
         # Feedforward
         input_ids, attention_mask, token_type_ids, regression_labels, binary_labels = batch['input_ids'], batch['attention_mask'], batch['token_type_ids'], batch['regression_label'], batch['binary_label']
         classification_output, regression_output = self(input_ids, attention_mask, token_type_ids)
+        
+        # Validation 과정에서 dimension 체크
+        if classification_output.ndim == 0:
+            classification_output = classification_output.unsqueeze(-1)
+
+        if regression_output.ndim == 0:
+            regression_output = regression_output.unsqueeze(-1)
 
         # Loss functions
-        classification_loss = F.binary_cross_entropy_with_logits(classification_output, binary_labels.float())
-        regression_loss = F.l1_loss(regression_output, regression_labels)
+        classification_loss = self.classifier_loss_fn(classification_output, binary_labels.float())
+        regression_loss = self.regressor_loss_fn(regression_output, regression_labels)
         
         # Loss
-        combined_loss = classification_loss + regression_loss
+        combined_loss = 0.5*classification_loss + 0.5*regression_loss
         
         # Evaluation metrics
         classification_probs = torch.sigmoid(classification_output)
         classification_preds = classification_probs > 0.5
-        self.f1_score(classification_preds, binary_labels.int())
+        self.f1_score(classification_preds, binary_labels.float())
         self.pearson_corrcoef(regression_output, regression_labels.float())
 
         return regression_output, combined_loss

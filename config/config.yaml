@@ -4,12 +4,12 @@ data:
   output_path: ./output/
   predict_path: ./data/test.csv
   submission_path: ./data/sample_submission.csv
-  train_path: ./data/train.csv
+  train_path: ./data/balanced_df.csv
   val_path: ./data/dev_150.csv
 model:
   model_name: team-lucid/deberta-v3-base-korean
 train:
-  batch_size: 16
+  batch_size: 32
   learning_rate: 1e-5
   max_epoch: 10
   shuffle: true

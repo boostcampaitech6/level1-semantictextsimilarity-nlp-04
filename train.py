@@ -63,8 +63,8 @@ def train(config: dict) -> None:
     반환 없이 함수 내에서 파일을 생성하는 것으로 종료합니다.
     '''
 
-    # 시드 고정
-    set_seed(666)
+    set_seed(1225)
+    
     # 경고 제거
     warning_block()
 
@@ -94,7 +94,8 @@ def train(config: dict) -> None:
     # <PERSON> 토큰 추가 및 토크나이저 임베딩
     new_tokens = ['<PERSON>']
     dataloader.token_add(new_tokens)
-    model.model.resize_token_embeddings(len(dataloader.tokenizer))
+    model.classification_model.resize_token_embeddings(len(dataloader.tokenizer))
+    model.regression_model.resize_token_embeddings(len(dataloader.tokenizer))
 
     # early stopping
     early_stopping_callbacks = pl.callbacks.EarlyStopping(
@@ -112,9 +113,9 @@ def train(config: dict) -> None:
         mode='min'
     )
     
-    # wandb
-    experiment_name = f"{model_name}_{max_epoch:02d}_{learning_rate}_{datetime.now(pytz.timezone('Asia/Seoul')):%y%m%d%H%M}"
-    wandb_logger = WandbLogger(name=experiment_name, project='monitor', entity='level1-semantictextsimilarity-nlp-04')
+    # # wandb
+    # experiment_name = f"{model_name}_{max_epoch:02d}_{learning_rate}_{datetime.now(pytz.timezone('Asia/Seoul')):%y%m%d%H%M}"
+    # wandb_logger = WandbLogger(name=experiment_name, project='monitor', entity='level1-semantictextsimilarity-nlp-04')
 
     # gpu가 없으면 accelerator="cpu"로 변경해주세요, gpu가 여러개면 'devices=4'처럼 사용하실 gpu의 개수를 입력해주세요
     trainer = pl.Trainer(
@@ -123,7 +124,7 @@ def train(config: dict) -> None:
         max_epochs=max_epoch,
         log_every_n_steps=1,
         callbacks=[early_stopping_callbacks, checkpoint_callback],
-        logger = wandb_logger
+        # logger = wandb_logger
         )
 
     # Train part
@@ -135,11 +136,11 @@ def train(config: dict) -> None:
     validation_df = pd.read_csv(val_path)
     validation_df['prediction'] = valid_predictions
 
-    # wandb에 dataframe을 업로드
-    validation_table = wandb.Table(dataframe=validation_df)
-    wandb.log({'validation_data': validation_table})
+    # # wandb에 dataframe을 업로드
+    # validation_table = wandb.Table(dataframe=validation_df)
+    # wandb.log({'validation_data': validation_table})
     
-    wandb_logger.experiment.finish()
+    # wandb_logger.experiment.finish()
 
     # 모델 저장을 위한 이름 지정, /경로를 언더바로 변환 및 에포크를 하나로
     saved_name = re.sub('/', '_', config['model']['model_name'])
