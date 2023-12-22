@@ -82,7 +82,6 @@ def train(config: dict) -> None:
     checkpoint_path = config['data']['checkpoint_path']
     saved_name = re.sub('/', '_', config['model']['model_name'])
     
-    
 
     # dataloader와 model을 생성합니다.
     # mdoel_name, batch_size, shuffle, train_path, dev_path, test_path, predict_path 지정
@@ -113,9 +112,9 @@ def train(config: dict) -> None:
         mode='min'
     )
     
-    # # wandb
-    # experiment_name = f"{model_name}_{max_epoch:02d}_{learning_rate}_{datetime.now(pytz.timezone('Asia/Seoul')):%y%m%d%H%M}"
-    # wandb_logger = WandbLogger(name=experiment_name, project='monitor', entity='level1-semantictextsimilarity-nlp-04')
+    # wandb
+    experiment_name = f"{model_name}_{max_epoch:02d}_{learning_rate}_{datetime.now(pytz.timezone('Asia/Seoul')):%y%m%d%H%M}"
+    wandb_logger = WandbLogger(name=experiment_name, project='monitor', entity='level1-semantictextsimilarity-nlp-04')
 
     # gpu가 없으면 accelerator="cpu"로 변경해주세요, gpu가 여러개면 'devices=4'처럼 사용하실 gpu의 개수를 입력해주세요
     trainer = pl.Trainer(
@@ -124,7 +123,7 @@ def train(config: dict) -> None:
         max_epochs=max_epoch,
         log_every_n_steps=1,
         callbacks=[early_stopping_callbacks, checkpoint_callback],
-        # logger = wandb_logger
+        logger = wandb_logger
         )
 
     # Train part
@@ -136,11 +135,11 @@ def train(config: dict) -> None:
     validation_df = pd.read_csv(val_path)
     validation_df['prediction'] = valid_predictions
 
-    # # wandb에 dataframe을 업로드
-    # validation_table = wandb.Table(dataframe=validation_df)
-    # wandb.log({'validation_data': validation_table})
+    # wandb에 dataframe을 업로드
+    validation_table = wandb.Table(dataframe=validation_df)
+    wandb.log({'validation_data': validation_table})
     
-    # wandb_logger.experiment.finish()
+    wandb_logger.experiment.finish()
 
     # 모델 저장을 위한 이름 지정, /경로를 언더바로 변환 및 에포크를 하나로
     saved_name = re.sub('/', '_', config['model']['model_name'])
