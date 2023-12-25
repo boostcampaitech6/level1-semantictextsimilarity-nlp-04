@@ -64,7 +64,7 @@ def train(config: dict) -> None:
     '''
 
     # 시드 고정
-    set_seed(666)
+    set_seed()
     # 경고 제거
     warning_block()
 
@@ -85,16 +85,13 @@ def train(config: dict) -> None:
     
 
     # dataloader와 model을 생성합니다.
-    # mdoel_name, batch_size, shuffle, train_path, dev_path, test_path, predict_path 지정
-    dataloader = Dataloader(model_name, batch_size, shuffle, train_path, dev_path, val_path, predict_path)
-    
-    # model_name, learning_rate 지정
-    model = Model(model_name, learning_rate)
+    # mdoel_name, batch_size, shuffle, train_path, val_path, predict_path, num_folds 지정
+    dataloader = Dataloader(model_name, batch_size, shuffle, train_path, val_path, predict_path, num_folds=5)
+    dataloader.setup()
 
     # <PERSON> 토큰 추가 및 토크나이저 임베딩
     new_tokens = ['<PERSON>']
     dataloader.token_add(new_tokens)
-    model.model.resize_token_embeddings(len(dataloader.tokenizer))
 
     # early stopping
     early_stopping_callbacks = pl.callbacks.EarlyStopping(
@@ -112,34 +109,43 @@ def train(config: dict) -> None:
         mode='min'
     )
     
-    # wandb
-    experiment_name = f"{model_name}_{max_epoch:02d}_{learning_rate}_{datetime.now(pytz.timezone('Asia/Seoul')):%y%m%d%H%M}"
-    wandb_logger = WandbLogger(name=experiment_name, project='monitor', entity='level1-semantictextsimilarity-nlp-04', log_model=True)
+    # # wandb
+    # experiment_name = f"{model_name}_{max_epoch:02d}_{learning_rate}_{datetime.now(pytz.timezone('Asia/Seoul')):%y%m%d%H%M}"
+    # wandb_logger = WandbLogger(name=experiment_name, project='monitor', entity='level1-semantictextsimilarity-nlp-04', log_model=True)
 
-    # gpu가 없으면 accelerator="cpu"로 변경해주세요, gpu가 여러개면 'devices=4'처럼 사용하실 gpu의 개수를 입력해주세요
-    trainer = pl.Trainer(
-        accelerator="gpu",
-        devices=1,
-        max_epochs=max_epoch,
-        log_every_n_steps=1,
-        callbacks=[early_stopping_callbacks, checkpoint_callback],
-        logger = wandb_logger
-        )
+    for fold_index in range(dataloader.num_folds):
+        print(f"Training on fold {fold_index + 1}/{dataloader.num_folds}")
 
-    # Train part
-    trainer.fit(model=model, datamodule=dataloader)
+        train_loader, dev_loader = dataloader.get_fold_dataloaders(fold_index)
 
-    # Validation part
-    trainer.test(model=model, datamodule=dataloader)
-    valid_predictions = torch.cat(model.predictions, dim=0).numpy()
-    validation_df = pd.read_csv(val_path)
-    validation_df['prediction'] = valid_predictions
+        # model_name, learning_rate 지정
+        model = Model(model_name, learning_rate)
+        model.model.resize_token_embeddings(len(dataloader.tokenizer))
 
-    # wandb에 dataframe을 업로드
-    validation_table = wandb.Table(dataframe=validation_df)
-    wandb.log({'validation_data': validation_table})
+        # gpu가 없으면 accelerator="cpu"로 변경해주세요, gpu가 여러개면 'devices=4'처럼 사용하실 gpu의 개수를 입력해주세요
+        trainer = pl.Trainer(
+            accelerator="gpu",
+            devices=1,
+            max_epochs=max_epoch,
+            log_every_n_steps=1,
+            callbacks=[early_stopping_callbacks, checkpoint_callback],
+            # logger = wandb_logger
+            )
+
+        # Train part
+        trainer.fit(model=model, train_dataloaders=train_loader, val_dataloaders=dev_loader)
+        # Validation part
+        trainer.test(model=model, datamodule=dataloader)
+
+    # valid_predictions = torch.cat(model.predictions, dim=0).numpy()
+    # validation_df = pd.read_csv(val_path)
+    # validation_df['prediction'] = valid_predictions
+
+    # # wandb에 dataframe을 업로드
+    # validation_table = wandb.Table(dataframe=validation_df)
+    # wandb.log({'validation_data': validation_table})
     
-    wandb_logger.experiment.finish()
+    # wandb_logger.experiment.finish()
 
     # 모델 저장을 위한 이름 지정, /경로를 언더바로 변환 및 에포크를 하나로
     saved_name = re.sub('/', '_', config['model']['model_name'])

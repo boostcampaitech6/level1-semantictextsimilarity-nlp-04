@@ -54,21 +54,10 @@ class Model(pl.LightningModule):
 
     def configure_optimizers(self):
         optimizer = torch.optim.AdamW(self.parameters(), lr=self.lr)
+        return optimizer
 
-        # Attached Learning Rate Scheduler
-        scheduler = {
-            'scheduler': get_linear_schedule_with_warmup(
-                optimizer,
-                num_warmup_steps= 0.1 * (self.total_steps),
-                num_training_steps=self.total_steps),
-            'interval': 'step'
-        }
-        return {'optimizer': optimizer, 'lr_scheduler': scheduler}
-
-    def setup(self, stage='fit'):
-        if stage =='fit':
-            self.total_steps=self.trainer.max_epochs * len(self.trainer.datamodule.train_dataloader())
-        elif stage == 'test':
+    def setup(self, stage=None):
+        if stage =='test':
             self.predictions = []
 
 
