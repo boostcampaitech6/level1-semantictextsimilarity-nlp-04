@@ -64,7 +64,7 @@ def train(config: dict) -> None:
     '''
 
     # 시드 고정
-    set_seed(666)
+    set_seed()
     # 경고 제거
     warning_block()
 

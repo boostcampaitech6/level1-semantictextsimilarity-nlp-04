@@ -9,7 +9,7 @@ data:
 model:
   model_name: team-lucid/deberta-v3-base-korean
 train:
-  batch_size: 16
+  batch_size: 32
   learning_rate: 1e-5
   max_epoch: 10
   shuffle: true
