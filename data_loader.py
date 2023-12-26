@@ -68,3 +68,13 @@ class Dataloader(pl.LightningDataModule):
 
         new_tokens = set(new_tokens) - set(self.tokenizer.vocab.keys())
         self.tokenizer.add_tokens(list(new_tokens))
+
+    def get_me_csv(self, csv_data):
+        df = pd.DataFrame()
+
+        df['sentence_1'] = csv_data['sentence_1']
+        df['sentence_2'] = csv_data['sentence_2']
+        df['tokenized_1'] = csv_data['sentence_1'].apply(self.tokenizer.tokenize)
+        df['tokenized_2'] = csv_data['sentence_2'].apply(self.tokenizer.tokenize)
+        
+        df.to_csv('tokenized_test.csv', index=False)
