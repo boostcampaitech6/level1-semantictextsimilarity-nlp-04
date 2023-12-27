@@ -25,16 +25,16 @@
 </div>
 
 ## 해결사
-구희찬 [<img src="img/github_logo.png" width="20" style="vertical-align:middle;">](https://github.com/kooqooo)|권예진 [<img src="img/github_logo.png" width="20" style="vertical-align:middle;">](https://github.com/Becky-Kwon)|김진기 [<img src="img/github_logo.png" width="20" style="vertical-align:middle;">](https://github.com/jingi-data)|김희범 [<img src="img/github_logo.png" width="20" style="vertical-align:middle;">](https://github.com/C7C4FF)|박준우 [<img src="img/github_logo.png" width="20" style="vertical-align:middle;">](https://github.com/doodaad)|손유림 [<img src="img/github_logo.png" width="20" style="vertical-align:middle;">](https://github.com/alwaysday4u)|
-:-:|:-:|:-:|:-:|:-:|:-:
-<img src='img/kooqooo.jpg' height=125 width=125></img>|<img src='img/becky_full.jpg' height=125 width=125></img>|<img src='img/kjg.png' height=125 width=125></img>|<img src='img/beom.jpg' height=125 width=125></img>|<img src='img/pjw.jpg' height=125 width=125></img>|<img src='img/syl.png' height=125 width=125></img>
+|구희찬 [<img src="img/github-mark.png" width="20" style="vertical-align:middle;">](https://github.com/kooqooo)|권예진 [<img src="img/github-mark.png" width="20" style="vertical-align:middle;">](https://github.com/Becky-Kwon)|김진기 [<img src="img/github-mark.png" width="20" style="vertical-align:middle;">](https://github.com/jingi-data)|김희범 [<img src="img/github-mark.png" width="20" style="vertical-align:middle;">](https://github.com/C7C4FF)|박준우 [<img src="img/github-mark.png" width="20" style="vertical-align:middle;">](https://github.com/doodaad)|손유림 [<img src="img/github-mark.png" width="20" style="vertical-align:middle;">](https://github.com/alwaysday4u)|
+|:-:|:-:|:-:|:-:|:-:|:-:|
+|<img src='img/kooqooo.jpg' height=125 width=125></img>|<img src='img/becky_full.jpg' height=125 width=125></img>|<img src='img/kjg.png' height=125 width=125></img>|<img src='img/beom.jpg' height=125 width=125></img>|<img src='img/pjw.jpg' height=125 width=125></img>|<img src='img/syl.png' height=125 width=125></img>|
 
 ## 역할 분담
 
 <div align='center'>
 
-| 팀원 | 역할 |
-| --- | --- |
+|팀원| 역할 |
+|:---:| --- |
 | 구희찬 | 데이터 증강 기법 탐색 및 실험, 데이터 분포 시각화 및 앙상블 유틸리티 생성, 파인 튜닝 |
 | 권예진 | 모델 탐색 및 실험, 베이스라인 관리, 분류 코드 관리 총괄, 기계번역 데이터 증강 및 앙상블 실험 |
 | 김진기 | 개발, 협업 환경 및 베이스라인 관리, 데이터 분포 관리, 모델 탐색 및 실험, 앙상블 코드 작성 및 실험 |
@@ -137,7 +137,7 @@ wandb==0.16.1
 <div align='center'>
 
 | channel | sentence_1 | sentence_2 |
-| --- | --- | --- |
+|:---:|:---|:---|
 | nsmc | 혹평하신분들은 로맨틱코메디를 얼마나 심오하게 보시는분들인지는 모르겠지만 개인적으로는 가볍게 기분좋게 보기 좋은 영화라고 생각합니다.. | 로맨틱코미디를 비판하는 사람들이 얼마나 심한지는 모르겠지만 개인적으로는 가볍게 보기 좋은 영화라고 생각한다. |
 |  | 울면서 본 영화다. | 울컥 하면서 보는 드라마입니다. |
 |  | 킹콩이면 도대체 콩진호가 얼마나 큰 건가요? | . 콩진호가 나가신다! |
@@ -155,7 +155,7 @@ wandb==0.16.1
 <div align='center'>
 
 | Label 구간 | sentence_1 | sentence_2 | 특징 |
-| --- | --- | --- | --- |
+|:---:|:---|:---|:---|
 | 5.0 | 검정고시가 페지되어야 한다고 봅니다 | 검정고시 페지해야 한다고 봅니다 | 문장부호의 개수 및 띄어쓰기, 조사가 생략되거나 하는 다소의 차이가 존재하나, 문장이 거의 일치합니다. |
 | 4.0 ~ 4.9 | 나는 이걸 왜 보았을까?? | 이거 내가 왜 봤지? | 문장의 의미가 거의 일치하나, 단어의 어순이 다르거나 일부 단어가 유의어로 교체되었습니다. |
 | 3.0 ~ 3.9 | 히딩크감독을 다시 대한민국 축구 감독으로 | 히딩크감독님을 모셔와야합니다 | 문장의 맥락이 거의 일치하나, 주요한 보어 혹은 목적어가 누락되거나 유의어 대체 등에서 뚜렷한 차이를 보입니다. |
@@ -186,7 +186,7 @@ wandb==0.16.1
 <div align='center'>
 
 |  | 모델 | 데이터 | 비율 |
-| --- | --- | --- | --- |
+|:---:|:---|:---|:---:|
 | A | snunlp/KR-ELECTRA-discriminator | train+dev (shuffle 8:2) | 0.3 |
 | B | snunlp/KR-ELECTRA-discriminator (stacking) | train + swap data | 0.2 |
 | C | beomi/KcELECTRA-base | train + swap data | 0.2 |
@@ -202,9 +202,9 @@ wandb==0.16.1
 <div align='center'>
 
 | 순위 | 분류 | 점수(Pearson Correlation) |
-| --- | --- | --- |
-| 1 | Public Score (대회 진행) | 0.9374 |
-| 1 | Private Score (최종) | 0.9428 |
+|:---:| --- | --- |
+| 🥇 | Public Score (대회 진행) | 0.9374 |
+| 🥇 | Private Score (최종) | 0.9428 |
 
 </div>
 
