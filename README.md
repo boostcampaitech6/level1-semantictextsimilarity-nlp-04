@@ -1,4 +1,10 @@
+<div align='center'>
+
 # Lv.1 NLP 기초 프로젝트 : 문장 간 유사도 측정(STS)
+
+</div>
+
+
 
 ## **개요**
 > 진행 기간: 23년 12월 13일 ~ 23년 12월 21일
@@ -19,15 +25,13 @@
 </div>
 
 ## 해결사
-
-구희찬|권예진|김진기|김희범|박준우|손유림|
+구희찬 [<img src="img/github_logo.png" width="20" style="vertical-align:middle;">](https://github.com/kooqooo)|권예진 [<img src="img/github_logo.png" width="20" style="vertical-align:middle;">](https://github.com/Becky-Kwon)|김진기 [<img src="img/github_logo.png" width="20" style="vertical-align:middle;">](https://github.com/jingi-data)|김희범 [<img src="img/github_logo.png" width="20" style="vertical-align:middle;">](https://github.com/C7C4FF)|박준우 [<img src="img/github_logo.png" width="20" style="vertical-align:middle;">](https://github.com/doodaad)|손유림 [<img src="img/github_logo.png" width="20" style="vertical-align:middle;">](https://github.com/alwaysday4u)|
 :-:|:-:|:-:|:-:|:-:|:-:
 <img src='img/kooqooo.jpg' height=125 width=125></img>|<img src='img/becky_full.jpg' height=125 width=125></img>|<img src='img/kjg.png' height=125 width=125></img>|<img src='img/beom.jpg' height=125 width=125></img>|<img src='img/pjw.jpg' height=125 width=125></img>|<img src='img/syl.png' height=125 width=125></img>
-[<img src="img/github_logo.png" width="35">](https://github.com/kooqooo)|[<img src="img/github_logo.png" width="35">](https://github.com/Becky-Kwon)|[<img src="img/github_logo.png" width="35">](https://github.com/jingi-data)|[<img src="img/github_logo.png" width="35">](https://github.com/C7C4FF)|[<img src="img/github_logo.png" width="35">](https://github.com/doodaad)|[<img src="img/github_logo.png" width="35">](https://github.com/alwaysday4u)|
 
 ## 역할 분담
 
-<center>
+<div align='center'>
 
 | 팀원 | 역할 |
 | --- | --- |
@@ -38,17 +42,18 @@
 | 박준우 | 모델 탐색 및 실험, 다중 분류 코드 작성, 기계번역 데이터 증강 및 실험 |
 | 손유림 | 데이터 증강 코드 작성 및 모듈 관리, 분류 코드 실험 보조, 기계번역 데이터 증강 및 실험 |
 
-</center>
+</div>
+
+
 
 
 ## 프로젝트 구조도
 
-<center>
+<div align='center'>
 
 <img src='img/structure.png'></img>
 
-</center>
-
+</div>
 
 ## 개발/협업 환경
 
@@ -67,7 +72,15 @@ PyYAML==6.0
 wget==3.2
 wandb==0.16.1
 ```
-### 프로젝트 트리
+### GitHub
+현업에서 진행하는 방식을 최대한 따르려고 노력했습니다. 이슈와 PR 템플릿을 작성하고, 팀 내의 커밋 컨벤션 규칙을 작성하여 후에 봐도 통일된 모습으로 쉽게 변경 사항을 찾을 수 있도록 했습니다. 기본 템플릿을 main 브랜치로 둔 뒤에, develop 브랜치에서 개발을 진행하였습니다. develop 브랜치에서도 새로운 기능을 개발할 때는 새로운 브랜치로 분기를 만들어 진행한 뒤 작성이 끝나면 develop으로 리퀘스트를 작성하고, 팀원의 리뷰를 받은 뒤 병합을 진행하였습니다.
+
+### Notion
+메인 보드를 두고, 그곳에 자신의 업무 페이지를 작성하여 담당자를 할당한 후, 태그를 준비/진행 중/완료로 나누어 진 행 상황을 공유했습니다. 해당 페이지에는 본인의 작업 기간을 표시하여 타임라인으로도 활용했습니다. 가독성과 집중을 위해 대회 1주 차에 작성된 것들은 따로 탭을 만들어 저장하여 주마다 주요한 것들을 바로 확인할 수 있도록 했습니다.
+그리고 정보와 자료의 공유 공간으로 사용했습니다. 자신은 익숙하지만, 팀원들은 모를 수 있는 팁을 직접 작성하기도 하고, 팀원들이 읽어봤으면 하는 레퍼런스를 공유했습니다.
+
+### 프로젝트 템플릿
+주어진 Baseline 코드는 모델, 데이터로더, 학습까지 하나의 파일에 전부 작성되어 있었습니다. 앞으로 진행할 다른 대회에도 사용할 수 있도록 프로젝트 템플릿을 작성하여 그에 맞게 모듈화하여 구획하였습니다. 디렉토리는 원활한 실험을 위한 설정 파일을 담은 config, 학습, 검증, 평가, 증강 데이터를 담은 data, 학습이 끝난 모델과 inference 결과를 저장하는 output, 학습된 모델의 파라미터를 저장하는 checkpoint, Jupyter Notebook 작업을 수행하는 notebook, 데이터 전처리와 증강 등 다양한 곳에 사용한 모듈을 저장하는 utils으로 구분했습니다. 
 ```
 📦 level1-semantictextsimilarity-nlp-04
 ├─ .gitihub
@@ -108,30 +121,20 @@ wandb==0.16.1
 ├─ run.py
 └─ train.py
 ```
-### Github
-현업에서 진행하는 방식을 최대한 따르려고 노력했습니다. 이슈와 PR 템플릿을 작성하고, 팀 내의 커밋 컨벤션 규칙을 작성하여 후에 봐도 통일된 모습으로 쉽게 변경 사항을 찾을 수 있도록 했습니다. 기본 템플릿을 main 브랜치로 둔 뒤에, develop 브랜치에서 개발을 진행하였습니다. develop 브랜치에서도 새로운 기능을 개발할 때는 새로운 브랜치로 분기를 만들어 진행한 뒤 작성이 끝나면 develop으로 리퀘스트를 작성하고, 팀원의 리뷰를 받은 뒤 병합을 진행하였습니다.
-
-### Notion
-메인 보드를 두고, 그곳에 자신의 업무 페이지를 작성하여 담당자를 할당한 후, 태그를 준비/진행 중/완료로 나누어 진 행 상황을 공유했습니다. 해당 페이지에는 본인의 작업 기간을 표시하여 타임라인으로도 활용했습니다. 가독성과 집중을 위해 대회 1주 차에 작성된 것들은 따로 탭을 만들어 저장하여 주마다 주요한 것들을 바로 확인할 수 있도록 했습니다.
-그리고 정보와 자료의 공유 공간으로 사용했습니다. 자신은 익숙하지만, 팀원들은 모를 수 있는 팁을 직접 작성하기도 하고, 팀원들이 읽어봤으면 하는 레퍼런스를 공유했습니다.
-
-### 프로젝트 템플릿
-주어진 Baseline 코드는 모델, 데이터로더, 학습까지 하나의 파일에 전부 작성되어 있었습니다. 앞으로 진행할 다른 대회에도 사용할 수 있도록 프로젝트 템플릿을 작성하여 그에 맞게 모듈화하여 구획하였습니다. 디렉토리는 원활한 실험을 위한 설정 파일을 담은 config, 학습, 검증, 평가, 증강 데이터를 담은 data, 학습이 끝난 모델과 inference 결과를 저장하는 output, 학습된 모델의 파라미터를 저장하는 checkpoint, Jupyter Notebook 작업을 수행하는 notebook, 데이터 전처리와 증강 등 다양한 곳에 사용한 모듈을 저장하는 utils으로 구분했습니다. 
 
 ## 프로젝트 로드맵
 
-<center>
+<div align='center'>
 
 <img src='img/roadmap.png'></img>
 
-</center>
-
+</div>
 
 ## 데이터 
 ### **Source 별 데이터셋 특징**
 데이터셋의 출처는 총 3가지 source로 구성되어 있습니다. 먼저 petition 데이터셋은 국민청원 게시판 제목 데이터로, 대체로 오탈자가 적은 격식체의 문장들로 구성되어 있습니다. NSMC(Naver Sentiment Movie Corpus) 데이터셋은 네이버 영화 감성 분석 코퍼스로, 문어체와 구어체가 섞여 있었고, 일부 문장에서 특수문자가 발견되었습니다. Slack 데이터셋은 Upstage에서 제공한 slack 데이터셋으로, 전반적으로 구어체의 문장으로 구성되어 있었으며, 오탈자와 함께 문장 부호, 특수문자(이모티콘, 이모지 등)가 발견되었습니다.
 
-<center>
+<div align='center'>
 
 | channel | sentence_1 | sentence_2 |
 | --- | --- | --- |
@@ -145,11 +148,11 @@ wandb==0.16.1
 |  | 두 분 어디 도장깨기 하러 가시는가요… ㅋㅋㅋ | 둘이 봉인을 어디서 뜯으려나... 하하하 |
 |  | 너무 감사드립니다 ㅠㅠ | 너무 부럽습니다 ㅠㅠ |
 
-</center>
+</div>
 
 ### Label 별 데이터셋 특징
 
-<center>
+<div align='center'>
 
 | Label 구간 | sentence_1 | sentence_2 | 특징 |
 | --- | --- | --- | --- |
@@ -161,7 +164,7 @@ wandb==0.16.1
 | 0.1 ~ 0.9 | 공짜로 주어지는 것은 아무 것도 없다. | 아무 것도 남는게 없다.. | 일부 단어는 일치하나, 맥락과 의미가 전혀 다릅니다. |
 | 0.0 | 부모님 댁으로 받았는데 너무 맛있다고 하셔요!! ㅎㅎㅎ | 타고 싶은데 넘 비싸요 ㅎㅎ | 공통점이 없는 전혀 다른 문장입니다. |
 
-</center>
+</div>
 
 ## 아키텍쳐 보완
 
@@ -180,7 +183,7 @@ wandb==0.16.1
 
 ## Model 선택 및 앙상블
 
-<center>
+<div align='center'>
 
 |  | 모델 | 데이터 | 비율 |
 | --- | --- | --- | --- |
@@ -190,17 +193,18 @@ wandb==0.16.1
 | D | team-lucid/deberta-v3-xlarge-korean | train data | 0.3 |
 | E | xlm-roberta-large (PERSON 토큰 추가) | train data | 0.1 |
 
-</center>
+</div>
 
 ## 최종결과
 
 > **총 제출 횟수: 56**
 
-<center>
+<div align='center'>
 
 | 순위 | 분류 | 점수(Pearson Correlation) |
 | --- | --- | --- |
 | 1 | Public Score (대회 진행) | 0.9374 |
 | 1 | Private Score (최종) | 0.9428 |
 
-</center>
+</div>
+
