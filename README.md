@@ -25,9 +25,13 @@
 </div>
 
 ## 해결사
+<div align='center'>
+
 |구희찬 [<img src="img/github-mark.png" width="20" style="vertical-align:middle;">](https://github.com/kooqooo)|권예진 [<img src="img/github-mark.png" width="20" style="vertical-align:middle;">](https://github.com/Becky-Kwon)|김진기 [<img src="img/github-mark.png" width="20" style="vertical-align:middle;">](https://github.com/jingi-data)|김희범 [<img src="img/github-mark.png" width="20" style="vertical-align:middle;">](https://github.com/C7C4FF)|박준우 [<img src="img/github-mark.png" width="20" style="vertical-align:middle;">](https://github.com/doodaad)|손유림 [<img src="img/github-mark.png" width="20" style="vertical-align:middle;">](https://github.com/alwaysday4u)|
 |:-:|:-:|:-:|:-:|:-:|:-:|
 |<img src='img/kooqooo.jpg' height=125 width=125></img>|<img src='img/becky_full.jpg' height=125 width=125></img>|<img src='img/kjg.png' height=125 width=125></img>|<img src='img/beom.jpg' height=125 width=125></img>|<img src='img/pjw.jpg' height=125 width=125></img>|<img src='img/syl.png' height=125 width=125></img>|
+
+</div>
 
 ## 역할 분담
 
@@ -138,13 +142,13 @@ wandb==0.16.1
 
 | channel | sentence_1 | sentence_2 |
 |:---:|:---|:---|
-| nsmc | 혹평하신분들은 로맨틱코메디를 얼마나 심오하게 보시는분들인지는 모르겠지만 개인적으로는 가볍게 기분좋게 보기 좋은 영화라고 생각합니다.. | 로맨틱코미디를 비판하는 사람들이 얼마나 심한지는 모르겠지만 개인적으로는 가볍게 보기 좋은 영화라고 생각한다. |
+| **nsmc** | 혹평하신분들은 로맨틱코메디를 얼마나 심오하게 보시는분들인지는 모르겠지만 개인적으로는 가볍게 기분좋게 보기 좋은 영화라고 생각합니다.. | 로맨틱코미디를 비판하는 사람들이 얼마나 심한지는 모르겠지만 개인적으로는 가볍게 보기 좋은 영화라고 생각한다. |
 |  | 울면서 본 영화다. | 울컥 하면서 보는 드라마입니다. |
 |  | 킹콩이면 도대체 콩진호가 얼마나 큰 건가요? | . 콩진호가 나가신다! |
-| petition | 심평원, 한전 회식카드지출비 해외출장비 지원자금 조사의뢰 건 | 공동주택 일자리안정자금에 대한 문제점(미화원, 경비원 2019년 임금 동결건) |
+| **petition** | 심평원, 한전 회식카드지출비 해외출장비 지원자금 조사의뢰 건 | 공동주택 일자리안정자금에 대한 문제점(미화원, 경비원 2019년 임금 동결건) |
 |  | 고등학생도 휴업 해주세요. | 근로자의 휴식권을 찾아주세요.. |
 |  | 청소년법 폐지 간곡히 요청합니다 | 청소년보호법 폐지 간곡히 부탁드립니다. |
-| slack | 제가 모르는 종목도 많이 알고 계셨습니다. | 제가 있던 테이블에서도 너무나 가슴 뛰는 아이디어도 많이 나누었습니다. |
+| **slack** | 제가 모르는 종목도 많이 알고 계셨습니다. | 제가 있던 테이블에서도 너무나 가슴 뛰는 아이디어도 많이 나누었습니다. |
 |  | 두 분 어디 도장깨기 하러 가시는가요… ㅋㅋㅋ | 둘이 봉인을 어디서 뜯으려나... 하하하 |
 |  | 너무 감사드립니다 ㅠㅠ | 너무 부럽습니다 ㅠㅠ |
 
@@ -187,11 +191,11 @@ wandb==0.16.1
 
 |  | 모델 | 데이터 | 비율 |
 |:---:|:---|:---|:---:|
-| A | snunlp/KR-ELECTRA-discriminator | train+dev (shuffle 8:2) | 0.3 |
-| B | snunlp/KR-ELECTRA-discriminator (stacking) | train + swap data | 0.2 |
-| C | beomi/KcELECTRA-base | train + swap data | 0.2 |
-| D | team-lucid/deberta-v3-xlarge-korean | train data | 0.3 |
-| E | xlm-roberta-large (PERSON 토큰 추가) | train data | 0.1 |
+| **A** | snunlp/KR-ELECTRA-discriminator | train+dev (shuffle 8:2) | 0.3 |
+| **B** | snunlp/KR-ELECTRA-discriminator (stacking) | train + swap data | 0.2 |
+| **C** | beomi/KcELECTRA-base | train + swap data | 0.2 |
+| **D** | team-lucid/deberta-v3-xlarge-korean | train data | 0.3 |
+| **E** | xlm-roberta-large (PERSON 토큰 추가) | train data | 0.1 |
 
 </div>
 
@@ -202,7 +206,7 @@ wandb==0.16.1
 <div align='center'>
 
 | 순위 | 분류 | 점수(Pearson Correlation) |
-|:---:| --- | --- |
+|:---:| --- |:---:|
 | 🥇 | Public Score (대회 진행) | 0.9374 |
 | 🥇 | Private Score (최종) | 0.9428 |
 
