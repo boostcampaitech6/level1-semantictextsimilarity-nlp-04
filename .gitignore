@@ -16,6 +16,14 @@ pyvenv.cfg
 *.yaml
 !requirements.txt
 
+config
+config/
+config/config.yaml
+config/*.yaml
+*.yaml
+
+checkpoint/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -181,3 +189,11 @@ lightning_logs
 .config
 
 *.csv
+
+# wandb 로그는 commit에서 제외합니다.
+wandb/
+
+# jupyter notebook 최종 release에서 업로드
+*.ipynb
+
+.gitignore

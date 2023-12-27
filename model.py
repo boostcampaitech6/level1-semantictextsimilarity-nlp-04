@@ -3,62 +3,72 @@ import random
 
 import pandas as pd
 
-from tqdm.auto import tqdm
-import pytorch_lightning as pl
-import transformers
 import torch
-import torchmetrics
+import pytorch_lightning as pl
+from transformers import AutoModelForSequenceClassification, get_linear_schedule_with_warmup
+from torchmetrics.functional import pearson_corrcoef
 
 
 class Model(pl.LightningModule):
     def __init__(self, model_name, lr):
         super().__init__()
         self.save_hyperparameters()
-
-        self.model_name = model_name
+        self.model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=1)
         self.lr = lr
-
-        # 사용할 모델을 호출합니다.
-        self.plm = transformers.AutoModelForSequenceClassification.from_pretrained(
-            pretrained_model_name_or_path=model_name, num_labels=1)
-        # Loss 계산을 위해 사용될 L1Loss를 호출합니다.
         self.loss_func = torch.nn.L1Loss()
 
-    def forward(self, x):
-        x = self.plm(x)['logits']
+    def forward(self, **inputs):
+        outputs = self.model(**inputs)
+        return outputs.logits.squeeze(-1)
 
-        return x
+    def step(self, batch):
+        inputs = {key: val for key, val in batch.items() if key!= 'labels'}
+        labels = batch['labels']
+        predictions = self(**inputs)
+        loss = self.loss_func(predictions, labels.float())
+        pearson = pearson_corrcoef(predictions, labels.to(torch.float64))
+        return loss, pearson
 
     def training_step(self, batch, batch_idx):
-        x, y = batch
-        logits = self(x)
-        loss = self.loss_func(logits, y.float())
-        self.log("train_loss", loss)
-
-        return loss
+        train_loss, pearson = self.step(batch)
+        self.log("train_loss", train_loss, logger=True)
+        self.log("train_pearson", pearson, logger=True)
+        return train_loss
 
     def validation_step(self, batch, batch_idx):
-        x, y = batch
-        logits = self(x)
-        loss = self.loss_func(logits, y.float())
-        self.log("val_loss", loss)
-
-        self.log("val_pearson", torchmetrics.functional.pearson_corrcoef(logits.squeeze(), y.squeeze()))
-
-        return loss
+        val_loss, pearson = self.step(batch)
+        self.log("val_loss", val_loss, logger=True)
+        self.log("val_pearson", pearson, logger=True)
 
     def test_step(self, batch, batch_idx):
-        x, y = batch
-        logits = self(x)
-
-        self.log("test_pearson", torchmetrics.functional.pearson_corrcoef(logits.squeeze(), y.squeeze()))
-
+        inputs = {key: val for key, val in batch.items() if key!= 'labels'}
+        labels = batch['labels']
+        predictions = self(**inputs)
+        self.predictions.append(predictions.detach().cpu())
+        pearson = pearson_corrcoef(predictions, labels.to(torch.float64))
+        self.log("test_pearson", pearson, logger=True)
+            
     def predict_step(self, batch, batch_idx):
-        x = batch
-        logits = self(x)
-
-        return logits.squeeze()
+        inputs = {key: val for key, val in batch.items() if key!= 'labels'}
+        return self(**inputs)
 
     def configure_optimizers(self):
         optimizer = torch.optim.AdamW(self.parameters(), lr=self.lr)
-        return optimizer
+
+        # Attached Learning Rate Scheduler
+        scheduler = {
+            'scheduler': get_linear_schedule_with_warmup(
+                optimizer,
+                num_warmup_steps= 0.1 * (self.total_steps),
+                num_training_steps=self.total_steps),
+            'interval': 'step'
+        }
+        return {'optimizer': optimizer, 'lr_scheduler': scheduler}
+
+    def setup(self, stage='fit'):
+        if stage =='fit':
+            self.total_steps=self.trainer.max_epochs * len(self.trainer.datamodule.train_dataloader())
+        elif stage == 'test':
+            self.predictions = []
+
+

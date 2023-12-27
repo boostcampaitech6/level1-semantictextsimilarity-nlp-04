@@ -1,16 +1,15 @@
-model:
-    model_name: 'snunlp/KR-ELECTRA-discriminator'
-    
-train:
-    batch_size: 16
-    max_epochs: 10
-    shuffle: True
-    learning_rate: 1e-5
-
 data:
-    train_path: './data/train.csv'
-    dev_path: './data/dev.csv'
-    test_path: './data/dev.csv'
-    predict_path: './data/test.csv'
-    submission_path: './data/sample_submission.csv'
-    output_path: './output/'
+  checkpoint_path: ./checkpoint/
+  dev_path: ./data/dev_balanced.csv
+  output_path: ./output/
+  predict_path: ./data/test.csv
+  submission_path: ./data/sample_submission.csv
+  train_path: ./data/train_balanced.csv
+  val_path: ./data/dev.csv
+model:
+  model_name: team-lucid/deberta-v3-base-korean
+train:
+  batch_size: 16
+  learning_rate: 1e-5
+  max_epoch: 10
+  shuffle: true
