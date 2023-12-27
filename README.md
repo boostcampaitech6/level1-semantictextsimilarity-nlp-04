@@ -1,9 +1,6 @@
-# readme.md
-
 # Lv.1 NLP 기초 프로젝트 : 문장 간 유사도 측정(STS)
 
 ## **개요**
----
 > 진행 기간: 23년 12월 13일 ~ 23년 12월 21일
 
 > 데이터셋: 
@@ -16,19 +13,22 @@
 부스트캠프AI Tech 6기의 6주 차, 7주 차 과정으로 NLP 기초 대회입니다. 주제는 ‘문장 간 유사도 측정’으로, 두 문장이 얼마나 유사한지를 수치화하는 자연어처리 N21 태스크인 의미 유사도 판별(Semantic Text Similarity, 이하 STS)을 진행했습니다. 학습 데이터에 주어진 문장 두 개와 유사도 점수를 기반으로 평가 데이터의 두 문장 간의 유사도를 0과 5 사이의 값으로 예측하는 모델을 구축하였습니다.
 
 ## 리더보드 결과
----
-<img src='https://img.shields.io/badge/STS_Public_LB-1st-gold'></img><img src='https://img.shields.io/badge/STS_Private_LB-1st-gold'></img>
-<img src='img/leaderboard.png'></img>
+<div align="left">
+    <img src='https://img.shields.io/badge/STS_Public_LB-🥇-yellow_green'></img> <img src='https://img.shields.io/badge/STS_Private_LB-🥇-yellow_green'></img>
+    <img src='img/leaderboard.png'></img>
+</div>
 
 ## 해결사
----
+
 구희찬|권예진|김진기|김희범|박준우|손유림|
 :-:|:-:|:-:|:-:|:-:|:-:
 <img src='img/kooqooo.jpg' height=125 width=125></img>|<img src='img/becky_full.jpg' height=125 width=125></img>|<img src='img/kjg.png' height=125 width=125></img>|<img src='img/beom.jpg' height=125 width=125></img>|<img src='img/pjw.jpg' height=125 width=125></img>|<img src='img/syl.png' height=125 width=125></img>
-[![Github](img/github_logo.png)](https://github.com/kooqooo)|[![Github](img/github_logo.png)](https://github.com/Becky-Kwon)|[![Github](img/github_logo.png)](https://github.com/jingi-data)|[![Github](img/github_logo.png)](https://github.com/C7C4FF)|[![Github](img/github_logo.png)](https://github.com/doodaad)|[![Github](img/github_logo.png)](https://github.com/alwaysday4u)
+[<img src="img/github_logo.png" width="35">](https://github.com/kooqooo)|[<img src="img/github_logo.png" width="35">](https://github.com/Becky-Kwon)|[<img src="img/github_logo.png" width="35">](https://github.com/jingi-data)|[<img src="img/github_logo.png" width="35">](https://github.com/C7C4FF)|[<img src="img/github_logo.png" width="35">](https://github.com/doodaad)|[<img src="img/github_logo.png" width="35">](https://github.com/alwaysday4u)|
 
 ## 역할 분담
----
+
+<center>
+
 | 팀원 | 역할 |
 | --- | --- |
 | 구희찬 | 데이터 증강 기법 탐색 및 실험, 데이터 분포 시각화 및 앙상블 유틸리티 생성, 파인 튜닝 |
@@ -38,11 +38,19 @@
 | 박준우 | 모델 탐색 및 실험, 다중 분류 코드 작성, 기계번역 데이터 증강 및 실험 |
 | 손유림 | 데이터 증강 코드 작성 및 모듈 관리, 분류 코드 실험 보조, 기계번역 데이터 증강 및 실험 |
 
+</center>
+
+
 ## 프로젝트 구조도
----
+
+<center>
+
 <img src='img/structure.png'></img>
+
+</center>
+
+
 ## 개발/협업 환경
----
 
 ### 하드웨어
 > **Tesla V100 32GB** * 6EA
@@ -111,13 +119,20 @@ wandb==0.16.1
 주어진 Baseline 코드는 모델, 데이터로더, 학습까지 하나의 파일에 전부 작성되어 있었습니다. 앞으로 진행할 다른 대회에도 사용할 수 있도록 프로젝트 템플릿을 작성하여 그에 맞게 모듈화하여 구획하였습니다. 디렉토리는 원활한 실험을 위한 설정 파일을 담은 config, 학습, 검증, 평가, 증강 데이터를 담은 data, 학습이 끝난 모델과 inference 결과를 저장하는 output, 학습된 모델의 파라미터를 저장하는 checkpoint, Jupyter Notebook 작업을 수행하는 notebook, 데이터 전처리와 증강 등 다양한 곳에 사용한 모듈을 저장하는 utils으로 구분했습니다. 
 
 ## 프로젝트 로드맵
----
+
+<center>
+
 <img src='img/roadmap.png'></img>
 
+</center>
+
+
 ## 데이터 
----
 ### **Source 별 데이터셋 특징**
 데이터셋의 출처는 총 3가지 source로 구성되어 있습니다. 먼저 petition 데이터셋은 국민청원 게시판 제목 데이터로, 대체로 오탈자가 적은 격식체의 문장들로 구성되어 있습니다. NSMC(Naver Sentiment Movie Corpus) 데이터셋은 네이버 영화 감성 분석 코퍼스로, 문어체와 구어체가 섞여 있었고, 일부 문장에서 특수문자가 발견되었습니다. Slack 데이터셋은 Upstage에서 제공한 slack 데이터셋으로, 전반적으로 구어체의 문장으로 구성되어 있었으며, 오탈자와 함께 문장 부호, 특수문자(이모티콘, 이모지 등)가 발견되었습니다.
+
+<center>
+
 | channel | sentence_1 | sentence_2 |
 | --- | --- | --- |
 | nsmc | 혹평하신분들은 로맨틱코메디를 얼마나 심오하게 보시는분들인지는 모르겠지만 개인적으로는 가볍게 기분좋게 보기 좋은 영화라고 생각합니다.. | 로맨틱코미디를 비판하는 사람들이 얼마나 심한지는 모르겠지만 개인적으로는 가볍게 보기 좋은 영화라고 생각한다. |
@@ -130,7 +145,12 @@ wandb==0.16.1
 |  | 두 분 어디 도장깨기 하러 가시는가요… ㅋㅋㅋ | 둘이 봉인을 어디서 뜯으려나... 하하하 |
 |  | 너무 감사드립니다 ㅠㅠ | 너무 부럽습니다 ㅠㅠ |
 
+</center>
+
 ### Label 별 데이터셋 특징
+
+<center>
+
 | Label 구간 | sentence_1 | sentence_2 | 특징 |
 | --- | --- | --- | --- |
 | 5.0 | 검정고시가 페지되어야 한다고 봅니다 | 검정고시 페지해야 한다고 봅니다 | 문장부호의 개수 및 띄어쓰기, 조사가 생략되거나 하는 다소의 차이가 존재하나, 문장이 거의 일치합니다. |
@@ -141,8 +161,10 @@ wandb==0.16.1
 | 0.1 ~ 0.9 | 공짜로 주어지는 것은 아무 것도 없다. | 아무 것도 남는게 없다.. | 일부 단어는 일치하나, 맥락과 의미가 전혀 다릅니다. |
 | 0.0 | 부모님 댁으로 받았는데 너무 맛있다고 하셔요!! ㅎㅎㅎ | 타고 싶은데 넘 비싸요 ㅎㅎ | 공통점이 없는 전혀 다른 문장입니다. |
 
+</center>
+
 ## 아키텍쳐 보완
----
+
 ### Stacking 구현
 데이터에 주어진 ‘binary-label’을 활용하여 회귀와 이진 분류를 동시에 수행하는 모델을 만들었습니다. 이진 분류를 통해 예측 범위를 좁혀 보다 정밀한 예측을 기대했습니다. Stacking은 매개변수 공유 여부에 따라 두 가지 방식으로 구현했습니다. 매개변수 공유가 있는 경우에는 하나의 모델을 사용했습니다. AutoModel의 출력은 Classification head에서 0 또는 1로 분류되고, 해당하 Regression head로 전파됩니다. 매개변수 공유가 없는 경우에는 두 개의 모델을 사용했습니다. 하나의 모델 출력을 사용하여 이진 분류를 수행한 뒤, 다른 모델의 출력값을 이 분류에 맞게 Regression head로 전달합니다. 두 방식의 성능은 대체로 비슷했습니다. 매개변수 공유가 있는 방식은 학습 속도가 빠르고, 매개변수 공유가 없는 방식은 과적합에 있어 안정적인 모습을 보였습니다. 하지만 두 방식 모두 validation 과정에서 상당한 과적합이 나타났습니다. 특히 사전 학습 모델의 규모가 커질수록 이러한 문제가 두드러졌습니다. 이는 모델이 복잡해질 때 나타나는 특징으로 보입니다.
 
@@ -157,7 +179,9 @@ wandb==0.16.1
 또한 collate_fn을 통해 배치 단위로 padding을 추가했습니다. 일부 사전 학습된 모델의 경우 입력 길이에 차이가 있으면 에러가 발생했습니다. 이를 해결하고자 transformers의 ‘DataCollatorWithPadding’을 사용하였고 덕분에 보다 보편적인 실험 환경을 갖출 수 있었습니다.
 
 ## Model 선택 및 앙상블
----
+
+<center>
+
 |  | 모델 | 데이터 | 비율 |
 | --- | --- | --- | --- |
 | A | snunlp/KR-ELECTRA-discriminator | train+dev (shuffle 8:2) | 0.3 |
@@ -166,11 +190,17 @@ wandb==0.16.1
 | D | team-lucid/deberta-v3-xlarge-korean | train data | 0.3 |
 | E | xlm-roberta-large (PERSON 토큰 추가) | train data | 0.1 |
 
+</center>
+
 ## 최종결과
----
+
 > **총 제출 횟수: 56**
+
+<center>
 
 | 순위 | 분류 | 점수(Pearson Correlation) |
 | --- | --- | --- |
 | 1 | Public Score (대회 진행) | 0.9374 |
 | 1 | Private Score (최종) | 0.9428 |
+
+</center>
